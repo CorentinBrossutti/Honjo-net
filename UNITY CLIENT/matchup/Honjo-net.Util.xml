@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Honjo-net.Util</name>
+    </assembly>
+    <members>
+        <member name="T:Honjo.Framework.Util.Compression">
+            <summary>
+            Enumeration for compression methods
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Compression.UNKNOWN">
+            <summary>
+            Unknown compression method (parsing error ?)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Compression.NONE">
+            <summary>
+            No compression
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Compression.GZIP">
+            <summary>
+            Gzip compression
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Compression.DEFLATE_RAW">
+            <summary>
+            Raw (no CRC) deflate compression
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Util.CompressionExtensions">
+            <summary>
+            Extensions methods for compression
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Process(Honjo.Framework.Util.Compression,System.IO.Stream,System.IO.Stream,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Process data from a stream and writes its processed (compressed) counterpart to another
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Process(Honjo.Framework.Util.Compression,System.Byte[],System.Boolean)">
+            <summary>
+            Process a byte array, returns its processed (compressed) counterpart
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Process(Honjo.Framework.Util.Compression,System.Byte[],System.IO.Stream,System.Boolean,System.Boolean)">
+            <summary>
+            Process a byte array, and writes its processed (compressed) counterpart to a stream
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Process(Honjo.Framework.Util.Compression,System.IO.Stream,System.Boolean,System.Int32)">
+            <summary>
+            Process data from a stream and returns its processed (compressed) counterpart as a byte array
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Compress(Honjo.Framework.Util.Compression,System.Byte[])">
+            <summary>
+            Compresses data and returns it
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Compress(Honjo.Framework.Util.Compression,System.IO.Stream,System.IO.Stream,System.Int32,System.Boolean)">
+            <summary>
+            Compresses data from a stream and writes it to another
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Compress(Honjo.Framework.Util.Compression,System.Byte[],System.IO.Stream,System.Boolean)">
+            <summary>
+            Compresses data and writes it to a stream
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Compress(Honjo.Framework.Util.Compression,System.IO.Stream,System.Int32)">
+            <summary>
+            Compresses data from a stream and returns it (the compressed data)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Decompress(Honjo.Framework.Util.Compression,System.Byte[])">
+            <summary>
+            Decompresses data and returns it
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Decompress(Honjo.Framework.Util.Compression,System.IO.Stream,System.IO.Stream,System.Int32,System.Boolean)">
+            <summary>
+            Decompresses data from a stream and writes it to another
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Decompress(Honjo.Framework.Util.Compression,System.Byte[],System.IO.Stream,System.Boolean)">
+            <summary>
+            Decompresses data and writes it to a stream
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.CompressionExtensions.Decompress(Honjo.Framework.Util.Compression,System.IO.Stream,System.Int32)">
+            <summary>
+            Decompresses data from a stream and returns it
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Util.Concurrent.Locks">
+            <summary>
+            A handy class to reference immutable, readonly object instances to lock upon
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Concurrent.Locks._internLocks">
+            <summary>
+            Internal dictionary for locks
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Util.Concurrent.Locks.Item(System.String)">
+            <summary>
+            Get the lock object linked to a given key
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Concurrent.Locks.#ctor(System.String[])">
+            <summary>
+            Constructs a new lock container
+            </summary>
+            <param name="baseLocks">Base locks to register</param>
+        </member>
+        <member name="T:Honjo.Framework.Util.StreamUtil">
+            <summary>
+            Utility class for stream methods
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.StreamUtil.GetRemainingBytes(System.IO.Stream)">
+            <summary>
+            Do not use it for large streams, from which you haven't read from awhile!
+            Also does not work for streams for which you can't get length
+            </summary>
+            <param name="stream">The stream</param>
+            <returns>The remaining number of bytes to read</returns>
+        </member>
+        <member name="M:Honjo.Framework.Util.StreamUtil.ReadRemaining(System.IO.Stream)">
+            <summary>
+            Reads all remaining bytes in the stream. Very heavy and does not work for streams without length (network)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.StreamUtil.Read(System.IO.Stream,System.Int32)">
+            <summary>
+            Reads <b>length</b> bytes from the given stream
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.StreamUtil.CopyTo(System.IO.Stream,System.IO.Stream,System.Int32,System.Boolean)">
+            <summary>
+            Copies the contents of a stream to another.
+            Returns the number of bytes copied
+            </summary>
+            <param name="stream_in">Input stream</param>
+            <param name="stream_out">Output stream</param>
+            <param name="bufferSize">Buffer size to use if the input stream does not support length query. 512 by default.</param>
+            <param name="seekBack">Whether to roll the stream back at its previous position if it supports it</param>
+        </member>
+    </members>
+</doc>

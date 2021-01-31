@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>honjo-net.database</id>
+    <version>1.0.2</version>
+    <authors>Corentin BROSSUTTI</authors>
+    <owners>Corentin BROSSUTTI</owners>
+    <licenseUrl>https://github.com/Reymmer/honjo-net/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/Reymmer/honjo-net</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Database library of honjo-net framework. Provides utilitaries for database access and management. ONLY SUPPORTS POSTGRESQL SERVERS FOR NOW</description>
+    <releaseNotes>Readme. Only supports PostgreSQL for now</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>database honjo-net pgsql</tags>
+    <dependencies>
+      <dependency id="Npgsql" version="4.0.3" />
+    </dependencies>
+  </metadata>
+</package>

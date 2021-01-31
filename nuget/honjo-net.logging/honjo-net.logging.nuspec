@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>honjo-net.logging</id>
+    <version>1.0.4</version>
+    <authors>Corentin BROSSUTTI</authors>
+    <owners>Corentin BROSSUTTI</owners>
+    <licenseUrl>https://github.com/Reymmer/honjo-net/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/Reymmer/honjo-net</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Logging library of honjo-net framework. Provides helpers for logging and data storage.</description>
+    <releaseNotes>Unity removed</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>logging logger honjo-net</tags>
+  </metadata>
+</package>

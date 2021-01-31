@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Honjo-net.Logging</AssemblyName>
+    <RootNamespace>Akila.Framework.Logging</RootNamespace>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\Framework.Logging.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="for %%x in ($(TargetDir)Honjo-net.Logging.*) do copy /y /b %%x $(SolutionDir)..\nuget\honjo-net.logging\lib\netstandard2.0\&#xD;&#xA;del /q $(SolutionDir)..\nuget\honjo-net.logging\lib\netstandard2.0\Honjo-net.Logging.deps.json" />
+  </Target>
+
+</Project>

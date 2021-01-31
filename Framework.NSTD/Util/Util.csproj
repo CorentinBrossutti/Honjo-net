@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Honjo-net.Util</AssemblyName>
+    <RootNamespace>Akila.Framework.Util</RootNamespace>
+    <ApplicationIcon />
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\Framework.Util.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\Honjo-net.Util.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="for %%x in ($(TargetDir)Honjo-net.Util.*) do copy /y /b %%x $(SolutionDir)..\nuget\honjo-net.util\lib\netstandard2.0\&#xD;&#xA;del /q $(SolutionDir)..\nuget\honjo-net.util\lib\netstandard2.0\Honjo-net.Util.deps.json" />
+  </Target>
+
+</Project>

@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Honjo-net.Database</name>
+    </assembly>
+    <members>
+        <member name="T:Honjo.Framework.Database.SqlData">
+            <summary>
+            A data, retrieved using a sql query. The connection is still open, and only closed using <see cref="M:Honjo.Framework.Database.SqlData.Dispose"/> or <see cref="M:Honjo.Framework.Database.SqlData.Unpack"/>/<see cref="M:Honjo.Framework.Database.SqlData.UnpackRaw"/>.
+            Use it with a using clause or remember to dispose it.
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Database.SqlData._conn">
+            <summary>
+            Underlying npgsql connection
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Database.SqlData.SqlReader">
+            <summary>
+            The native sql reader
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Database.SqlData.HasData">
+            <summary>
+            Is there data to read ? Does NOT say if it has MORE data, only if it ever was
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlData.#ctor(Npgsql.NpgsqlConnection,Npgsql.NpgsqlDataReader,Npgsql.NpgsqlCommand)">
+            <summary>
+            Creates a new sql data
+            </summary>
+            <param name="connection">The npgsql connection</param>
+            <param name="reader">The npgsql reader retrieved with the query</param>
+            <param name="underlying">The underlying command (used to dispose it)</param>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlData.NextRow">
+            <summary>
+            Goes to the next row
+            </summary>
+            <returns>Whether there is more data to read</returns>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlData.Get``1(System.Int32)">
+            <summary>
+            Gets the content of a column
+            </summary>
+            <typeparam name="T">Expected type</typeparam>
+            <param name="column">Column index</param>
+            <returns>The content of the column at given column index in the current row</returns>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlData.Get``1(System.String)">
+            <summary>
+            Gets the content of a column
+            </summary>
+            <typeparam name="T">Expected type</typeparam>
+            <param name="column">Column name</param>
+            <returns>The content of the column with the given column name in the current row</returns>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlData.UnpackRaw">
+            <summary>
+            Unpacks the retrieved data. Once unpacked, the connection is closed.
+            </summary>
+            <returns>A 2d array of which the first index is the row and the 2nd is the column to get the content of</returns>
+            <remarks>If data has previously been read normally, it will not be unpacked</remarks>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlData.Unpack">
+            <summary>
+            Unpacks the retrieved data. Once unpacked the connection is closed.
+            </summary>
+            <returns>A 2d array of which the index is the row and the content is then obtained through the column name</returns>
+            <remarks>If data has previously been read normally, it will not be unpacked</remarks>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlData.Dispose">
+            <summary>
+            Disposes this data (closes the connection and stuff)
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Database.SqlServer">
+            <summary>
+            A sql server, using a single connection
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Database.SqlServer.Address">
+            <summary>
+            Given address of the server
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Database.SqlServer.UID">
+            <summary>
+            Connection UID to this server
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Database.SqlServer.Connection">
+            <summary>
+            Underlying connection of this server
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer.#ctor(System.String,System.String,System.String,System.String)">
+            <summary>
+            Constructs a new sql server
+            </summary>
+            <param name="address">Address of the server</param>
+            <param name="database">Name of the database to connect to</param>
+            <param name="UID">User ID for connection</param>
+            <param name="password">Password to use for connection</param>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer.#ctor(System.String,System.String,System.String,System.String,System.Int32)">
+            <summary>
+            Constructs a new sql server
+            </summary>
+            <param name="address">Address of the server</param>
+            <param name="database">Name of the database to connect to</param>
+            <param name="UID">User ID for connection</param>
+            <param name="password">Password to use for connection</param>
+            <param name="port">The por to connect to. Default is 5432 (pgsql)</param>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer.NonQuery(System.String,System.Object[])">
+            <summary>
+            Executes a command in non-query
+            </summary>
+            <param name="command">The command (parameters written in order using @@)</param>
+            <param name="parameters">List of parameters</param>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer.NonQuery(Npgsql.NpgsqlCommand)">
+            <summary>
+            Executes a command in non-query
+            </summary>
+            <param name="command">SQL command to execute</param>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer.Retrieve(System.String,System.Object[])">
+            <summary>
+            Executes a command meant to retrieve data
+            </summary>
+            <param name="command">The command (parameters written in order using @@)</param>
+            <param name="parameters">List of parameters</param>
+            <returns>The encapsulated data</returns>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer.Retrieve(Npgsql.NpgsqlCommand)">
+            <summary>
+            Executes a command meant to retrieve data
+            </summary>
+            <param name="command">The SQL command</param>
+            <returns>The encapsulated data</returns>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer._ParamFRp(Npgsql.NpgsqlConnection,System.String,System.Object[])">
+            <summary>
+            Creates a valid sql command from a command string written using @@
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer._ParamReplace(Npgsql.NpgsqlConnection,System.String,System.Object[])">
+            <summary>
+            Creates a valid sql command from a formatted command string using standard format with parameters
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer._ParamFormat(System.String)">
+            <summary>
+            Formats a command written using @@ into a valid sql command with parameter ids
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Database.SqlServer.Dispose">
+            <summary>
+            Closes the connection and frees memory
+            </summary>
+        </member>
+    </members>
+</doc>

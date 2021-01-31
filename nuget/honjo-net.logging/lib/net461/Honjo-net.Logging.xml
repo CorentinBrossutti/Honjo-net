@@ -1,0 +1,538 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Honjo-net.Logging</name>
+    </assembly>
+    <members>
+        <member name="T:Honjo.Framework.Logging.Loggers.ConsoleLogger">
+            <summary>
+            Logs to the console (WriteLine)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.Loggers.ConsoleLogger.colors">
+            <summary>
+            Dictionary to link log levels to different console colors. Can be freely modified.
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.ConsoleLogger.#ctor(System.String,System.Boolean)">
+            <summary>
+            Constructs a new logger, which will log directly to console (stdout)
+            </summary>
+            <param name="appName">Name of the appliation using this logger</param>
+            <param name="logStart">Whether to print a standard message when this logger starts. True by default.</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.ConsoleLogger._SetConsoleColor(Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Set the console color
+            </summary>
+            <param name="level">Level to set the color</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.ConsoleLogger._SetConsoleColor(System.ConsoleColor)">
+            <summary>
+            Set the console color
+            </summary>
+            <param name="color">Native console color</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.ConsoleLogger.Log(System.String,System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Logs a message. Should apply formatting and stuff.
+            </summary>
+            <param name="level">Level to log, check <see cref="T:Honjo.Framework.Logging.LogLevel"/>. Default is normal</param>
+            <param name="appName">Name of the application to log</param>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.ConsoleLogger._Print(Honjo.Framework.Logging.LogLevel,System.String)">
+            <summary>
+            Print system-wise message (logger start...)
+            </summary>
+            <param name="level">Level, mainly used for color and formatting and does not hold any real information</param>
+            <param name="message">The message to print</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.ConsoleLogger._LogStartMsg">
+            <summary>
+            The log start message
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.ConsoleLogger.DefaultColor(Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Gets the default color for a given logging level
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Logging.Loggers.FileLogger">
+            <summary>
+            Log to a single, unique, file
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.Loggers.FileLogger.lines">
+            <summary>
+            The list of lines that have not been logged yet. Used when logging at DTOR time.
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Logging.Loggers.FileLogger.Filepath">
+            <summary>
+            The default this logger will write (overwrite/append) to
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Logging.Loggers.FileLogger.Type">
+            <summary>
+            Type of this logger
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.#ctor(System.String,System.String,Honjo.Framework.Logging.Loggers.FLgType,System.Boolean)">
+            <summary>
+            Constructs a new FileLogger, which will log according to his type to a given file (or multiple files...)
+            </summary>
+            <param name="appName">Name of the application using this logger</param>
+            <param name="filepath">The path of the file to write to when logging</param>
+            <param name="type">The file logging type. See relative doc</param>
+            <param name="logStart">Whether to print a standard logging start message. True by default.</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.__DTOR(System.Object,System.EventArgs)">
+            <summary>
+            Blocks this thread whilst an active logging is ongoing
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.Overwrite(System.Boolean)">
+            <summary>
+            Will use the file of this logger. Overwrites it.
+            </summary>
+            <param name="flush">Whether to flush the logged lines after writing. True by default.</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.Append(System.Boolean)">
+            <summary>
+            Will use the file of this logger. Appends to it.
+            </summary>
+            <param name="flush">Whether to flush the logger lines after writing. True by default.</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.Overwrite(System.String,System.Boolean)">
+            <summary>
+            Overwrites the file with logged lines
+            </summary>
+            <param name="path">Path of the file to overwrite</param>
+            <param name="flush">Whether to flush the logged lines after writing. True by default.</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.Append(System.String,System.Boolean)">
+            <summary>
+            Appends the logged lines
+            </summary>
+            <param name="path">Path of the file to append to</param>
+            <param name="flush">Whether to flush the logged lines after writing. True by default.</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.Log(System.String,System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Logs a message. Should apply formatting and stuff.
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="appName">Name of the application to log with</param>
+            <param name="level">Level to log, check <see cref="T:Honjo.Framework.Logging.LogLevel"/></param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger._Print(Honjo.Framework.Logging.LogLevel,System.String)">
+            <summary>
+            Print a raw message
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger._LogStartMsg">
+            <summary>
+            Log start message
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.GetNowFile">
+            <summary>
+            Get a file name composed of the instant's date and time
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.GetNowName">
+            <summary>
+            Get a name composed of the instant's date and time
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Loggers.FileLogger.GetNowFolder">
+            <summary>
+            Get a name composed of the instant's date and time
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Logging.Loggers.FLgType">
+            <summary>
+            Type of file logging
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.Loggers.FLgType.OVERWRITE_ONREC">
+            <summary>
+            Overwrites directly when logging. Useless.
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.Loggers.FLgType.OVERWRITE_DTOR">
+            <summary>
+            Overwrites the file with logged lines when application ends/logger is done
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.Loggers.FLgType.APPEND_ONREC">
+            <summary>
+            Appends to the file directly when logging.
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.Loggers.FLgType.APPEND_DTOR">
+            <summary>
+            Appends to the file with logged lines when application ends/logger is done
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.Loggers.FLgType.NONE">
+            <summary>
+            Nothing is automatically written, but everything is added to the lines. For manual use.
+            <see cref="M:Honjo.Framework.Logging.Loggers.FileLogger.Append(System.Boolean)"/>
+            <see cref="M:Honjo.Framework.Logging.Loggers.FileLogger.Append(System.String,System.Boolean)"/>
+            <see cref="M:Honjo.Framework.Logging.Loggers.FileLogger.Overwrite(System.Boolean)"/>
+            <see cref="M:Honjo.Framework.Logging.Loggers.FileLogger.Overwrite(System.String,System.Boolean)"/>
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Logging.Logger">
+            <summary>
+            A single logger
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Logging.Logger.AppName">
+            <summary>
+            Name of the application using this logger
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Logging.Logger.Mode">
+            <summary>
+            Verbose mode of this logger, full by default
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.#ctor(System.String,System.Boolean)">
+            <summary>
+            Constructs a new logger
+            </summary>
+            <param name="appName">Name of the application (or sub...) using this logger</param>
+            <param name="logStart">Whether to log a message when the logger starts. True by default.</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Log(System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Logs a message. Should apply formatting and stuff.
+            </summary>
+            <param name="level">Level to log, check <see cref="T:Honjo.Framework.Logging.LogLevel"/>. Default is normal</param>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Log(Honjo.Framework.Logging.LogLevel,System.String,System.String[])">
+            <summary>
+            Logs several messages with a custom app name
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Log(Honjo.Framework.Logging.LogLevel,System.String[])">
+            <summary>
+            Logs several messages
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Log(System.String,System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Logs a message. Should apply formatting and stuff.
+            </summary>
+            <param name="level">Level to log, check <see cref="T:Honjo.Framework.Logging.LogLevel"/>. Default is normal</param>
+            <param name="appName">Name of the application to log</param>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger._Print(Honjo.Framework.Logging.LogLevel,System.String)">
+            <summary>
+            Print system-wise message (logger start...)
+            </summary>
+            <param name="level">Level, mainly used for color and formatting and does not hold any real information</param>
+            <param name="message">The message to print</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger._LogStartMsg">
+            <summary>
+            Will NOT be formatted
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Debug(System.String)">
+            <summary>
+            Logs a debug message
+            </summary>
+            <param name="message">Message to log as debug</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Debug(System.String,System.String)">
+            <summary>
+            Logs a debug message
+            </summary>
+            <param name="message">Message to log as debug</param>
+            <param name="appName">Name of the application to log with</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Info(System.String)">
+            <summary>
+            Log an information
+            </summary>
+            <param name="message">Information to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Info(System.String,System.String)">
+            <summary>
+            Log an information
+            </summary>
+            <param name="message">Information to log</param>
+            <param name="appName">Name of the application to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Eyecatch(System.String)">
+            <summary>
+            Log an important information (eyecatcher)
+            </summary>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Eyecatch(System.String,System.String)">
+            <summary>
+            Log an important information (eyecatcher)
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="appName">Name of the application to log with</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Warn(System.String)">
+            <summary>
+            Log a warning message
+            </summary>
+            <param name="message">Warning to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Warn(System.String,System.String)">
+            <summary>
+            Log a warning message
+            </summary>
+            <param name="message">Warning to log</param>
+            <param name="appName">Name of the application to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Alert(System.String)">
+            <summary>
+            Logs an error. More severe errors (SEVERE, FATAL levels mostly) must be logged manually using <see cref="M:Honjo.Framework.Logging.Logger.Log(System.String,Honjo.Framework.Logging.LogLevel)"/>
+            </summary>
+            <param name="message">Error to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger.Alert(System.String,System.String)">
+            <summary>
+            Logs an error. More severe errors (SEVERE, FATAL levels mostly) must be logged manually using <see cref="M:Honjo.Framework.Logging.Logger.Log(System.String,Honjo.Framework.Logging.LogLevel)"/>
+            </summary>
+            <param name="message">Error to log</param>
+            <param name="appName">Name of the application to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger._Format(Honjo.Framework.Logging.LogLevel,System.String)">
+            <summary>
+            Returns a formatted, ready to log, version of a string
+            </summary>
+            <param name="level">Level of severity of the message</param>
+            <param name="message">Message (string) to format</param>
+            <returns>The formatted string</returns>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logger._Format(Honjo.Framework.Logging.LogLevel,System.String,System.String)">
+            <summary>
+            Returns a formatted, ready to log, version of a string
+            </summary>
+            <param name="level">Level of severity of the message</param>
+            <param name="message">Message (string) to format</param>
+            <param name="appName">Name of the application to log with</param>
+            <returns>The formatted string</returns>
+        </member>
+        <member name="T:Honjo.Framework.Logging.LogLevel">
+            <summary>
+            Defines the level (severity) of a log
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.LogLevel.DEBUG">
+            <summary>
+            Additional information (debug)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.LogLevel.NORMAL">
+            <summary>
+            Everything is normal (execution informations)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.LogLevel.INFO">
+            <summary>
+            This is just an information you may want to see
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.LogLevel.EYECATCHER">
+            <summary>
+            Equals to information level, except it is synthethic and is differenciated from less important informations
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.LogLevel.WARNING">
+            <summary>
+            Nothing wrong, but you may want to check this
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.LogLevel.ERROR">
+            <summary>
+            Something went wrong
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.LogLevel.SEVERE">
+            <summary>
+            An error that could possibly cause big trouble
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.LogLevel.FATAL">
+            <summary>
+            The application cannot continue
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Logging.Logging">
+            <summary>
+            Stored using application name, and thus has to be unique for a given application
+            A set of multiple loggers
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Logging.Logging.Loggers">
+            <summary>
+            All loggers contained
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Logging.Logging.AppName">
+            <summary>
+            Name of the application using this set of loggers
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Put(Honjo.Framework.Logging.Logger)">
+            <summary>
+            Adds a new logger to the set
+            </summary>
+            <param name="logger">The logger to add</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Log(System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Log a message to all the loggers of this set
+            </summary>
+            <param name="level">Level of severity, check <see cref="T:Honjo.Framework.Logging.LogLevel"/></param>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Log(System.String,System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Log a message to all the loggers of this set
+            </summary>
+            <param name="level">Level of severity, check <see cref="T:Honjo.Framework.Logging.LogLevel"/></param>
+            <param name="appName">Name of the application log with</param>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Debug(System.String)">
+            <summary>
+            Logs a debug message
+            </summary>
+            <param name="message">Message to log as debug</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Debug(System.String,System.String)">
+            <summary>
+            Logs a debug message
+            </summary>
+            <param name="message">Message to log as debug</param>
+            <param name="appName">Name of the application to log with</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Info(System.String)">
+            <summary>
+            Log an information
+            </summary>
+            <param name="message">Information to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Info(System.String,System.String)">
+            <summary>
+            Log an information
+            </summary>
+            <param name="message">Information to log</param>
+            <param name="appName">Name of the application to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Eyecatch(System.String)">
+            <summary>
+            Log an important information (eyecatcher)
+            </summary>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Eyecatch(System.String,System.String)">
+            <summary>
+            Log an important information (eyecatcher)
+            </summary>
+            <param name="message">Message to log</param>
+            <param name="appName">Name of the application to log with</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Warn(System.String)">
+            <summary>
+            Log a warning message
+            </summary>
+            <param name="message">Warning to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Warn(System.String,System.String)">
+            <summary>
+            Log a warning message
+            </summary>
+            <param name="message">Warning to log</param>
+            <param name="appName">Name of the application to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Alert(System.String)">
+            <summary>
+            Logs an error. More severe errors (SEVERE, FATAL levels mostly) must be logged manually using <see cref="M:Honjo.Framework.Logging.Logging.Log(System.String,Honjo.Framework.Logging.LogLevel)"/>
+            </summary>
+            <param name="message">Error to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.Alert(System.String,System.String)">
+            <summary>
+            Logs an error. More severe errors (SEVERE, FATAL levels mostly) must be logged manually using <see cref="M:Honjo.Framework.Logging.Logging.Log(System.String,Honjo.Framework.Logging.LogLevel)"/>
+            </summary>
+            <param name="message">Error to log</param>
+            <param name="appName">Name of the application to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.GetLogging(System.String)">
+            <summary>
+            Gets a new logging instance
+            </summary>
+            <param name="appName">Name of the application using this set of loggers</param>
+            <returns>The set of loggers for the given application</returns>
+        </member>
+        <member name="M:Honjo.Framework.Logging.Logging.GetLogging(System.String,Honjo.Framework.Logging.Logger[])">
+            <summary>
+            If the set of loggers already exists, the given loggers are added
+            If it does not exist, they are also added
+            </summary>
+            <param name="appName">Name of the application using this set of loggers</param>
+            <param name="loggers">A list of all loggers to add to the set. Added on top of the others if the set already exists for the given application.</param>
+            <returns>The set of loggers for the given application, which has been added the given loggers</returns>
+        </member>
+        <member name="T:Honjo.Framework.Logging.VerboseMode">
+            <summary>
+            Verbosity enum when logging
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.VerboseMode.NOTHING">
+            <summary>
+            Nothing is logged
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.VerboseMode.MINIMAL">
+            <summary>
+            Fatal, severe and errors are logged
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.VerboseMode.STANDARD">
+            <summary>
+            Fatal, severe, errors, warnings, and eyecatchers (important infos)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.VerboseMode.FULL">
+            <summary>
+            Fatal, severe, errors, warnings, infos
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.VerboseMode.EXTENDED">
+            <summary>
+            Everything except debug
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Logging.VerboseMode.DEBUG">
+            <summary>
+            Everything including debug
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Logging.VerboseModeExtensions">
+            <summary>
+            Extensions for enum VerboseMode
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Logging.VerboseModeExtensions.ShouldLog(Honjo.Framework.Logging.VerboseMode,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Whether a message with a given level should be logged according to a verbosity mode (level)
+            </summary>
+        </member>
+    </members>
+</doc>

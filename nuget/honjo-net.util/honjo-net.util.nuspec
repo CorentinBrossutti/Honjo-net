@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>honjo-net.util</id>
+    <version>1.0.5</version>
+    <authors>Corentin BROSSUTTI</authors>
+    <owners>Corentin BROSSUTTI</owners>
+    <licenseUrl>https://github.com/Reymmer/honjo-net/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/Reymmer/honjo-net</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Utilitary library of honjo-net framework. Contains several utilitaries and helpers, namely streams and pseudo enums.</description>
+    <releaseNotes>Unity removed</releaseNotes>
+    <copyright>Copyright 2018</copyright>
+    <tags>enum compression stream honjo-net</tags>
+  </metadata>
+</package>

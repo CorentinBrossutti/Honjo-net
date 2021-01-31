@@ -1,0 +1,1982 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Honjo-net.Network</name>
+    </assembly>
+    <members>
+        <member name="T:Honjo.Framework.Network.PacketExchange">
+            <summary>
+            Delegate when a given client exchanges data (sends or receives)
+            </summary>
+            <param name="client">Client who received the packet</param>
+            <param name="data">Packet exchanged</param>
+        </member>
+        <member name="T:Honjo.Framework.Network.Client">
+            <summary>
+            A client. Bear in mind that for client applications (ie not server side), some properties will seem useless or outright desync-ed
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client.DEFAULT_LOG_PACKETS">
+            <summary>
+            Whether to log all packets by default
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client.ALLOW_EXTERNAL_EXCEPTIONS">
+            <summary>
+            Whether to allow external errors to stop the server (false by default, can be changed to allow debugging)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client.COMPLETE_CONNECTION_CHECK">
+            <summary>
+            Whether to try to send data when client is disconnected to make sure it is not connected
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client.WARN_PACKET_ALREADY_PROCESSED">
+            <summary>
+            Whether to warn in the server (debug level) if the server is sending/receiving an already processed packet
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client.UNEXPECTED_DISCONNECTION_STACKTRACE">
+            <summary>
+            Whether to log the stacktrace in output when an unexpected disconnection happens
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client._CLIENTS_LOCK">
+            <summary>
+            Thread locker for the clients list
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Clients_id">
+            <summary>
+            All clients ids. Has a copy loop and thus more expensive than its collection counterpart
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Clients_id_collection">
+            <summary>
+            All clients ids as a collection of keys
+            Also, please lock when iterating
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Clients">
+            <summary>
+            USE ONLY IF YOU HAVE A REAL UTILITY FOR IT
+            All clients (objects). Pretty expensive due to the copy loop and the heaviness of objects. Its use is not advised (see collection counterpart)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Clients_collection">
+            <summary>
+            All clients (objects). Is simply a collection of values and thus inexpensive.
+            Please lock when iterating
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.ClientsCount">
+            <summary>
+            The number of clients connected
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client._CLIENTS">
+            <summary>
+            Clients by ID. The ID is fixed on client connection
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client._connected">
+            <summary>
+            Internal value. Other factors are taken into account
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Client._locks">
+            <summary>
+            References all non-static locks for this client
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Wrapper">
+            <summary>
+            Native C# socket bound to this client
+            </summary>
+        </member>
+        <member name="E:Honjo.Framework.Network.Client.OnDataReception">
+            <summary>
+            Delegate instance. Called when a packet is received.
+            You can use : OnDataReception += (delegate or method pointer) directly from outside the class
+            </summary>
+        </member>
+        <member name="E:Honjo.Framework.Network.Client.OnDataSent">
+            <summary>
+            Delegate instance. Called when a packet is sent.
+            You can use : OnDataSent += (delegate/method pointer) directly from outside the class
+            </summary>
+        </member>
+        <member name="E:Honjo.Framework.Network.Client.OnUnexpectedDisconnection">
+            <summary>
+            Delegate to call when the connection is unexpectedly severed (not disconnected by request)
+            </summary>
+        </member>
+        <member name="E:Honjo.Framework.Network.Client.OnDisconnection">
+            <summary>
+            Delegate to call when the client is disconnected (either normally or unexpectly). First arg is the client, 2nd is (expected = true, not = false)
+            </summary>
+            <seealso cref="E:Honjo.Framework.Network.Client.OnUnexpectedDisconnection"/>
+        </member>
+        <member name="E:Honjo.Framework.Network.Client.OnConnectionSetup">
+            <summary>
+            Single void method to call when the connection is setup, ready, and in most cases, encrypted
+            </summary>
+        </member>
+        <member name="E:Honjo.Framework.Network.Client.OnFullRightsGranted">
+            <summary>
+            Event to call when full rights are granted to the client
+            </summary>
+        </member>
+        <member name="E:Honjo.Framework.Network.Client.OnPgpKeySwapped">
+            <summary>
+            Event to call when this client (server-side, as client does not need to check for swapping end) has finished swapping keys and crypt helper
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client._DataReception_ids">
+            <summary>
+            Process packets received by this client with a given id 
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client._DataReception_ids_specs">
+            <summary>
+            Process packets received by this client with a given id and a given specifier
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Properties">
+            <summary>
+            Custom properties of this client
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.LocalProperties">
+            <summary>
+            Local-only (non syncrhonized properties of this client)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Connected">
+            <summary>
+            Whether this client is connected. Reliable.
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.IgnoreConnectionStatus">
+            <summary>
+            Whether to bypass connection checks when sending data
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Id">
+            <summary>
+            The id of this client. For client applications, it should be mirrored with the server
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Address">
+            <summary>
+            Remote IP address of this client
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.LocalPort">
+            <summary>
+            The port to which the client is connected on the server device
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.RemotePort">
+            <summary>
+            The port which this client uses from his device
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.PacketAvailable">
+            <summary>
+            Whether packets are available
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.PacketCount">
+            <summary>
+            The number of packets exchanged (sent and received both)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.ReceivedPacketCount">
+            <summary>
+            The number of packets received from this side
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.SentPacketCount">
+            <summary>
+            The number of packets sent from this side
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.ServerSide">
+            <summary>
+            Whether this client is located on the server
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.ClientLogger">
+            <summary>
+            The logger for this client. May be null.
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.IsAdmin">
+            <summary>
+            Whether this client has been established and authentified as administrator
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.BeginTime">
+            <summary>
+            The time at which the connection with this client was established
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.ExchangedPackets">
+            <summary>
+            A list of all packets exchanged. The bool is whether it was received (true) or sent (false)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.LogPackets">
+            <summary>
+            Whether this client should log the packets it receives/sends. Set to <see cref="F:Honjo.Framework.Network.Client.DEFAULT_LOG_PACKETS"/> by default.
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.BCSalt">
+            <summary>
+            The BCrypt salt, unique to this exchange
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.RemotePKey">
+            <summary>
+            The public key of the other end
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.RemotePgKey">
+            <summary>
+            The public key of the other end as native bouncy castle instance
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.ConnectionSetup">
+            <summary>
+            Is this client fully setup ?
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Protocol">
+            <summary>
+            The protocol used by this client
+            Shortcut for the local end point
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.LocalEndPoint">
+            <summary>
+            Local end point of this client
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.AutoDispose">
+            <summary>
+            Whether to automatically dispose this client when disconnected
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.Disposed">
+            <summary>
+            Whether this client is disposed
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.SymCrypt">
+            <summary>
+            Sym crypt for this client ; changing it client-side may cause disruption
+            It is unadvised to change it at all without caution as it may cause intermittent packets to be lost
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.PgpCrypt">
+            <summary>
+            Pgp (asymmetric) crypt for this client ; changing it client-side may cause disruption
+            It is unadvised to change it at all without caution as it may cause intermittent asym-crypted packets/packet data to be lost
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.DefaultSymEncryption">
+            <summary>
+            Default encryption to use when operating
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.DefaultAsymEncryption">
+            <summary>
+            Default asym encryption to use when operating
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.DefaultCompression">
+            <summary>
+            Default compression to use when not specifying any when sending a packet (set to none by framework-default)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Client.DefaultSerialization">
+            <summary>
+            Default serialization this client will use when not specifying any (also for framework packets). By default is equal to Packet.DEFAULT_SERIALIZATION
+            </summary>
+            Send(new Packet(Packet.OK_HEADER, Packet.AUTH_ID, __AUTH_CHANGE_SERIALIZATION_SPEC, value.Id),
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.#ctor(System.Net.IPAddress,Honjo.Framework.Network.Protocol,System.Int32)">
+            <summary>
+            Constructs a client
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.#ctor">
+            <summary>
+            Init constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.#ctor(System.Net.Sockets.Socket)">
+            <summary>
+            This constructor is only there for servers to create at-a-glance clients
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Disconnect(System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Disconnect this client
+            </summary>
+            <param name="message">The disconnection message</param>
+            <param name="logLevel">The level to log the disconnection with</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client._ServerSide_SymKey">
+            <summary>
+            Sets the symkey of this client to a new one, and sends it PGP-encrypted to the other side.
+            May cause disruption if wrongly used.
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.BcSalt">
+            <summary>
+            Generates a new salt bcrypt salt for this client and returns it
+            </summary>
+            <returns>New salt generated</returns>
+            <remarks>Not sure of its use in hindsight</remarks>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Dispose">
+            <summary>
+            Destroys this client to free heap space
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.SafeServerProperty(System.String,System.Object,System.Boolean,System.Boolean)">
+            <summary>
+            Sets a server property safely, both in public and local, and eventually synchronize it thereafter
+            </summary>
+            <param name="property">Property key</param>
+            <param name="value">Value to set</param>
+            <param name="overwrite">Overwrite any existing property</param>
+            <param name="sync">Whether to immediately synchronize</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.SetSerialization(Honjo.Framework.Network.Serialization,System.Boolean)">
+            <summary>
+            Set the serialization property
+            </summary>
+            <param name="serialization">Serialization</param>
+            <param name="signal">Whether to signal change to the other side</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Encapsulate``1(System.Func{``0,System.Byte[]},``0,System.Boolean)">
+            <summary>
+            Encapsulate securely an object using the crypting informations of this client
+            </summary>
+            <typeparam name="T">Generic type of object</typeparam>
+            <param name="encodeFunc">Function to encode the object into a byte array</param>
+            <param name="obj">Object to store</param>
+            <param name="asym">Use asymmetric parameters (if not, symmetric). Default : true</param>
+            <returns>Encapsulated, securely stored and encrypted object</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Encapsulate(System.String,System.Boolean)">
+            <summary>
+            Encapsulate securely a string using the crypting informations of this client
+            </summary>
+            <param name="str">String to store</param>
+            <param name="asym">Use asymmetric encryption (if not, symmetric). Default : true</param>
+            <returns>Encapsulated, securely stored and encrypted string</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Decapsulate``1(Honjo.Framework.Crypt.CryptObj{``0},System.Func{System.Byte[],``0},System.Boolean)">
+            <summary>
+            Decapsulates an encrypted object using the encrypting informations of this exchange
+            </summary>
+            <typeparam name="T">Generic object type to decapsulate</typeparam>
+            <param name="container">Secure container</param>
+            <param name="decodeFunc">Custom decode function to use</param>
+            <param name="asym">Use asymmetric information (if not, symmetric). Default : true</param>
+            <returns>Decapsulated object</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Decapsulate(Honjo.Framework.Crypt.CryptString,System.Boolean)">
+            <summary>
+            Decapsulates an encrypted string using the encrypted informations of this exchange
+            </summary>
+            <param name="container">Secure container</param>
+            <param name="asym">Use asymmetric information (if not, symmetric). Default : true</param>
+            <returns>Decapsulated string</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Ping(System.Byte,System.Byte,System.Boolean)">
+            <summary>
+            Pings the server using either default or specified values for the packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Hash(System.String)">
+            <summary>
+            Hashes a string using either bcrypt and the salt unique to this session and client (if available) or a default sha-512 1000iter hashing
+            </summary>
+            <param name="str">String to hash</param>
+            <returns>Hashed string</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.UnsafeSend(Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Truly sends data, no check
+            Uses default symmetric encryption, default serialization, default compression and no encryption as fallback
+            </summary>
+            <param name="packet">Packet to send to this client</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.UnsafeSend(Honjo.Framework.Network.Packets.Packet,Honjo.Framework.Crypt.Encryption,Honjo.Framework.Network.Serialization,Honjo.Framework.Util.Compression)">
+            <summary>
+            Truly sends data, no check
+            Uses no encryption as default encryption fallback
+            </summary>
+            <param name="packet">Packet to send to this client</param>
+            <param name="encryption">Default encryption to use</param>
+            <param name="serialization">Serialization to use. Will use FALLBACK if unsuccessful</param>
+            <param name="compression">Compression method to use</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.UnsafeSend(Honjo.Framework.Network.Packets.Packet,Honjo.Framework.Crypt.Encryption,Honjo.Framework.Crypt.Encryption,Honjo.Framework.Network.Serialization,Honjo.Framework.Util.Compression)">
+            <summary>
+            Truly sends data, no check
+            </summary>
+            <param name="packet">Packet to send to this client</param>
+            <param name="encryption">Default encryption to use</param>
+            <param name="fallback">Fallback encryption to use if the given one isn't setup. If this one doesn't work either, then no encryption</param>
+            <param name="serialization">Serialization to use. Will use FALLBACK if unsuccessful</param>
+            <param name="compression">Compression method to use</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Send(Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Tries to send a packet and throws an exception if unsuccessful (client not connected mostly)
+            Uses default symmetric encryption, default serialization, default compression and no encryption as fallback
+            </summary>
+            <param name="packet">Packet to send to this client</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Send(Honjo.Framework.Network.Packets.Packet,Honjo.Framework.Crypt.Encryption,Honjo.Framework.Network.Serialization,Honjo.Framework.Util.Compression)">
+            <summary>
+            Tries to send a packet and throws an exception if unsuccessful (client not connected mostly)
+            Uses no encryption as fallback
+            </summary>
+            <param name="packet">Packet to send to this client</param>
+            <param name="encryption">Default encryption to use</param>
+            /// <param name="serialization">Serialization to use. Will use FALLBACK if unsuccessful</param>
+            <param name="compression">Default compression method to use</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Send(Honjo.Framework.Network.Packets.Packet,Honjo.Framework.Crypt.Encryption,Honjo.Framework.Crypt.Encryption,Honjo.Framework.Network.Serialization,Honjo.Framework.Util.Compression)">
+            <summary>
+            Tries to send a packet and throws an exception if unsuccessful (client not connected mostly)
+            </summary>
+            <param name="packet">Packet to send to this client</param>
+            <param name="encryption">Default encryption to use</param>
+            <param name="fallback">Fallback encryption to use if the given one isn't setup. If this one doesn't work either, then no encryption</param>
+            <param name="serialization">Serialization to use. Will use FALLBACK if unsuccessful</param>
+            <param name="compression">Compression method to use</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.OnReception(System.Byte,Honjo.Framework.Network.PacketExchange)">
+            <summary>
+            Sets a method to be called when this specific client receives a packet with the given id
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.OnReception(System.Byte,System.Byte,Honjo.Framework.Network.PacketExchange)">
+            <summary>
+            Sets a method to be called when this specific client receives a packet with the given id and the given specifier
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.ToString">
+            <summary>
+            Get the string representation of this client
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.LogNotNull(Honjo.Framework.Logging.LogLevel,System.String)">
+            <summary>
+            Log a message if this client has a logging
+            </summary>
+            <param name="level">The log level</param>
+            <param name="message">The message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.LogNotNull(Honjo.Framework.Logging.LogLevel,System.String,System.String)">
+            <summary>
+            Logs a message with a custom app name if this client has a logging
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.LogNotNull(Honjo.Framework.Logging.LogLevel,System.String,System.String[])">
+            <summary>
+            Logs several messages with a custom app name if this client has a logging
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.LogNotNull(Honjo.Framework.Logging.LogLevel,System.String[])">
+            <summary>
+            Logs several messages with the default app name of this client's logging, if he has one (otherwise nothing is logged)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.ResetDataReception">
+            <summary>
+            Resets the methods called when receiving data. USE AT YOUR OWN RISK, MAY OVERRIDE A LOT OF BEHAVIOURS
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.ResetDataSending">
+            <summary>
+            Resets the methods called when sending data. USE AT YOUR OWN RISK, MAY OVERRIDE A LOT OF BEHAVIOURS
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client._DefaultPacketReception(Honjo.Framework.Network.Client,Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Default reception method for all packets. Calls reception methods and delegates for packets. Logs the packet.
+            Can be overriden to not call packet reception methods.
+            </summary>
+            <param name="client">Client who received the packet, since the method is static</param>
+            <param name="data">Received packet</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client._DefaultPacketSending(Honjo.Framework.Network.Client,Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Default sending method for packets. Mainly to store and log them.
+            </summary>
+            <param name="client">Client who received the packet, since the method is static</param>
+            <param name="data">Packet sent</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client._DefaultFullRightsGranted(Honjo.Framework.Network.Client)">
+            <summary>
+            Default full rights granted event handler
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client._DefaultUnexpectedDisconnection(Honjo.Framework.Network.Client)">
+            <summary>
+            Default unexpected disconnection event handler
+            </summary>
+            <param name="client">Disconnected client</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client._DefaultDisconnection(Honjo.Framework.Network.Client,System.Boolean)">
+            <summary>
+            Default disconnection event handler
+            </summary>
+            <param name="client">Client disconnected</param>
+            <param name="expected">Whether the disconnection was expected</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client._DefaultPgpKeySwapped(Honjo.Framework.Network.Client)">
+            <summary>
+            Default pgp key swapped event handler
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client._DefaultConnectionSetup(Honjo.Framework.Network.Client)">
+            <summary>
+            Connection setup event handler to do stuff
+            </summary>
+            <param name="client">Client whose connection was setup</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.SetAdminPwdHash(System.String)">
+            <summary>
+            Sets the hashed password to use to accept a client as admin (either local or on a server, albeit local is useless)
+            Has no effect if the hash is already defined
+            </summary>
+            <param name="pwdHash">Hashed password</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Client.Get(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id">The id</param>
+            <returns>The client who has the given id</returns>
+        </member>
+        <member name="T:Honjo.Framework.Network.ClientPropertyManager">
+            <summary>
+            Helper/manager class for properties linked to clients, also handles synchronization
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.ClientPropertyManager.PROP_SYNC_SPEC">
+            <summary>
+            Specifier for property sync packets, using Packet.SYNC_ID as ID
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.ClientPropertyManager.Client">
+            <summary>
+            The client linked
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.ClientPropertyManager.Handle">
+            <summary>
+            The dictionary handle of this manager
+            </summary>
+        </member>
+        <member name="E:Honjo.Framework.Network.ClientPropertyManager.OnSynchronization">
+            <summary>
+            Called when this manager synchronizes properties
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.ClientPropertyManager.Item(System.String,System.Boolean)">
+            <summary>
+            Brackets indexer usage
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.ClientPropertyManager.Get(System.String,System.Boolean)"/>
+        </member>
+        <member name="P:Honjo.Framework.Network.ClientPropertyManager.AutoSynchronization">
+            <summary>
+            Whether to automatically synchronize data when a set operation is done
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientPropertyManager.#ctor(Honjo.Framework.Network.Client)">
+            <summary>
+            Build a property manager for a client
+            </summary>
+            <param name="client">Client</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientPropertyManager.Has(System.String)">
+            <summary>
+            Check existence of a property
+            </summary>
+            <param name="property">Property to check</param>
+            <returns>True if the given property is present</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientPropertyManager.HasOfType(System.String,System.Type)">
+            <summary>
+            Check the existence and type-concordance of a property.
+            </summary>
+            <param name="property">Property to check</param>
+            <param name="type">Type to check</param>
+            <returns>True if the client has the given property and it is of the given type ; false otherwise</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientPropertyManager.Get(System.String,System.Boolean)">
+            <summary>
+            Retrieve the value of a property
+            </summary>
+            <param name="property">Property</param>
+            <param name="except">Whether to throw an exception if the property cannot be found. Default : true</param>
+            <returns>The value of the given property</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientPropertyManager.Set(System.String,Honjo.Framework.Network.Property,System.Boolean)">
+            <summary>
+            Set the value of a property
+            </summary>
+            <param name="property">Property</param>
+            <param name="value">Value, must be serializable for synchronization</param>
+            <param name="overwrite">Whether to overwrite the value of the property if already present. Default : true</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientPropertyManager.Synchronize">
+            <summary>
+            Synchronize properties with the server, and sets conflicts accordingly
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientPropertyManager._SyncRequest(Honjo.Framework.Network.Client,Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            A synchronization has been requested
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientPropertyManager.Dispose">
+            <summary>
+            Destroys this property manager
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Property">
+            <summary>
+            A property and the basic informations it carries
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Property.Value">
+            <summary>
+            The value (can be any object) of the property
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Property.OnConflict">
+            <summary>
+            The conflict resolution method
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Property.#ctor(System.Object,Honjo.Framework.Network.PropertyConflictResolution)">
+            <summary>
+            Creates a new property
+            </summary>
+            <param name="value">The value of the property</param>
+            <param name="conflictRes">The conflict resolution method. Default : property is NOT synchronized in case of conflict</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Property.ToString">
+            <summary>
+            String representation of this property
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.PropertyConflictResolution">
+            <summary>
+            What to do on the presence of a conflict when syncrhonizing a property. Do note the conflict res. method on the server wins
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.PropertyConflictResolution.CLIENT_OVERWRITE">
+            <summary>
+            Client wins on conflict
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.PropertyConflictResolution.SERVER_OVERWRITE">
+            <summary>
+            Server wins on conflict
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.PropertyConflictResolution.NO_SYNC_ON_CONFLICT">
+            <summary>
+            No sync, two ends retain their own value on conflict
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.PropertyConflictResolution.NO_SYNC">
+            <summary>
+            No sync at all
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.ClientLogInfo">
+            <summary>
+            Wrapper class when a client leaves and is logged
+            Contains various informations
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.ClientLogInfo.ExpectedDisconnection">
+            <summary>
+            Whether the disconnection preceeding the disconnection was expected
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.ClientLogInfo.Properties">
+            <summary>
+            All the properties this client had prior to disconnection
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.ClientLogInfo.NonSerializedProperties">
+            <summary>
+            The number of properties which couldn't be logged (non serializable) and are instead using a string representation
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.ClientLogInfo.PacketsLog">
+            <summary>
+            The packets this client exchanged
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientLogInfo.#ctor(Honjo.Framework.Network.Client,System.Boolean)">
+            <summary>
+            Constructs new log informations about a client
+            </summary>
+            <param name="client">Client to log</param>
+            <param name="expected">Whether the disconnection (source of the log) was expected</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.ClientLogInfo.#ctor(System.Boolean,System.Collections.Generic.Dictionary{System.String,Honjo.Framework.Network.Property},System.Int32,System.Collections.Generic.List{Honjo.Framework.Network.PacketLogInfo})">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.PacketLogInfo">
+            <summary>
+            Wrapper class to log informations about a packet exchanged.
+            Values may differ from side-to-side (server/client)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.PacketLogInfo.Packet">
+            <summary>
+            The packet
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.PacketLogInfo.Received">
+            <summary>
+            Whether this packet was received on this side
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.PacketLogInfo.#ctor(Honjo.Framework.Network.Packets.Packet,System.Boolean)">
+            <summary>
+            Constructs a new PacketLogInfo
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.Packet">
+            <summary>
+            A packet. Organizes groups of data properly.
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.RCV_BUFFER_SIZE">
+            <summary>
+            Receiving buffer size
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.SBYTES_HEADER_SIZE">
+            <summary>
+            The number of bytes in a pre-packet header. Internal only, no other real use.
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.HEADER_MAX_VALUE">
+            <summary>
+            To update along with SBYTES_HEADER_SIZE. Avoids a calculation
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.ADMIN_ID">
+            <summary>
+            ID for admin packets
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.AUTH_ID">
+            <summary>
+            ID for authentication packets
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.SYNC_ID">
+            <summary>
+            ID for synchronization packets
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.SYS_ID">
+            <summary>
+            ID for system-wise packets
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.FIRST_AVAILABLE_ID">
+            <summary>
+            First ID value that is not reserved. Do note that the SYS_ID will usually be set to 255
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.UNKNOWN_ID_VALUE">
+            <summary>
+            Only for interal transliteration mismatch errors
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.SYS_DEFAULT_PING_SPEC">
+            <summary>
+            Default system ping specifier
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.OK_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.ACK_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.YES_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.NO_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.CONFIRMATION_AWAIT_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.CONFIRMATION_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.FORWARD_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.PACKET_MALFORMED_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.AUTH_DENIED_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.NO_REQUEST_MATCH_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.AMBIGUITY_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.UQC_BROKEN_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.ERROR_HEADER">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.UNKNOWN_HEADER_VALUE">
+            <summary>
+            Default header values (OK, ACK, MALFORMED...), as per convention, headers not signaling an error (OK, ACK, YES, NO...) are positive, and inversely.
+            Doxygen might not show them all
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.FIRST_AVAILABLE_NEGATIVE_HEADER">
+            <summary>
+            First available header values (negative, positive). Note that UNKNOWN_HEADER is usually set to -128
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.FIRST_AVAILABLE_POSITIVE_HEADER">
+            <summary>
+            First available header values (negative, positive). Note that UNKNOWN_HEADER is usually set to -128
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.defPgpCrypt">
+            <summary>
+            Default asymmetric pgp crypt instance
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.defSymCrypt">
+            <summary>
+            Default symmetric crypt instance
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.formatter">
+            <summary>
+            Binary formatter to send packets
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.Packet.DEFAULT_SERIALIZATION">
+            <summary>
+            Default serialization to use (also for general packets)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.Contents">
+            <summary>
+            Contents of this packet. Any object is good.
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.Header">
+            <summary>
+            Header signed byte (-128 to +127). Handling of errors and ACK packets
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.Id">
+            <summary>
+            Identifier byte of the packet (0 to 255)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.Specifier">
+            <summary>
+            Specifier byte of the packet (0 to 255)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.ContentLength">
+            <summary>
+            The number of arguments in this packet
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.CreationTime">
+            <summary>
+            The date this packet was created
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.Designation">
+            <summary>
+            Designation of this packet, somewhat optional
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.ServerInterception">
+            <summary>
+            The time at which the server either sent or received this packet
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.Packet.Item(System.Int32)">
+            <summary>
+            Square brackets indexer
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.#ctor(System.SByte,System.Byte,System.Byte,System.Object[])">
+            <summary>
+            Constructs a packet. Will use default serialization
+            </summary>
+            <param name="header">Header signed byte</param>
+            <param name="id">Identifier byte</param>
+            <param name="specifier">Specifier byte</param>
+            <param name="contents">Contents (arguments of this packet)</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet._PreSetup(Honjo.Framework.Network.Serialization)">
+            <summary>
+            Sets this packet up for a given serialization
+            </summary>
+            <param name="serialization">Serialization to use</param>
+            <returns>True whether the setup was successful. If false, then fallback serialization was used (usually BCL native)</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet._PostSetup(Honjo.Framework.Network.Serialization)">
+            <summary>
+            Sets this packet up
+            ONLY FOR POST DESERIALIZATION
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.Get(System.Int32)">
+            <summary>
+            Retrieve the content at the given index
+            </summary>
+            <param name="index">Index of the content (argument)</param>
+            <returns>The content at the given index</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.GetRef(System.Int32)">
+            <summary>
+            Retrieve the (true) content at the given index, always by reference.
+            Modifying it has NO effect once the packet is setup
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Packets.Packet.GetRefInner(System.Int32)"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.GetRefInner(System.Int32)">
+            <summary>
+            Retrieve the (inner) content at the given index, always by reference.
+            Modifying it has an effect but be careful of content wrappers
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.Get``1(System.Int32)">
+            <summary>
+            Retrieve the content at the given index using generic casting
+            </summary>
+            <typeparam name="T">Generic for expected type</typeparam>
+            <param name="index">Index of the content (argument)</param>
+            <returns>The content at the given index</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.TrySendTo(Honjo.Framework.Network.Client)">
+            <summary>
+            Tries to send this packet
+            </summary>
+            <param name="client">Client to send the packet to</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.SetContentsArray(System.Object[])">
+            <summary>
+            Set the contents after initialization. The array is decomposed
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.RegisterInterception">
+            <summary>
+            Registers this packet as intercepted now
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.ToString">
+            <summary>
+            String representation of this packet
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.ContentsToString">
+            <summary>
+            Retrieve a string representation of the contents of this packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet._OCVRT``1(``0)">
+            <summary>
+            For subclasses only. Simple method to delegate explicit object conversion
+            </summary>
+            <typeparam name="T">Placeholder generic</typeparam>
+            <param name="from">Object to convert</param>
+            <returns>The object as a true object instance</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.HeaderTransliteration(System.SByte)">
+            <summary>
+            Transliterates a header value
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.IdTransliteration(System.Byte)">
+            <summary>
+            Transliterates an id value
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.HeaderValue(System.String)">
+            <summary>
+            Retrieve the value of a default header using its string representation
+            </summary>
+            <param name="header">The string representation of the header</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.IdValue(System.String)">
+            <summary>
+            Retrieve the value of a default id using its string representation
+            </summary>
+            <param name="id">The string representation of the id</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.Headers">
+            <summary>
+            Returns a dictionary containing all headers referenced by string key
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.Packet.Ids">
+            <summary>
+            Returns a dictionary containing all ids referenced by string key
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.ContentWrapperBase">
+            <summary>
+            Base type to check non-generic equality
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.ContentWrapperBase._content">
+            <summary>
+            Object property-backing field for content
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.ContentWrapperBase.Content">
+            <summary>
+            The content wrapped
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.ContentWrapperBase.CUSTOM_WRAPPERS">
+            <summary>
+            Add delegates here which return a content wrapper for a given type.
+            Doing it here will allow protobuf serialization for packets which have the given type as a content
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.ContentWrapperBase.AddCustomWrapper(System.Type,System.Func{System.Object,Honjo.Framework.Network.Packets.ContentWrapperBase},System.Boolean)">
+            <summary>
+            Adds a custom wrapper for a given type.
+            If it already contains a definition the overwrite bool will define its behaviour. False by default.
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.ContentWrapperBase.Wrap(System.Object)">
+            <summary>
+            Returns the given object wrapped as a generic ContentWrapper (used as a ContentWrapperBase)
+            If the given object is NOT primtive, it returns null
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.ContentWrapperBase.Wrap(System.Object,System.Boolean@)">
+            <summary>
+            Returns the given object wrapped as a generic ContentWrapper (used as a ContentWrapperBase)
+            If the given object is NOT primtive, it returns null
+            </summary>
+            <param name="obj">Object to wrap</param>
+            <param name="invalidType">Whether the type was invalid (if not and null, then serializable object)</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.ContentWrapperBase.Wrap(System.Type,System.Object,System.Boolean@)">
+            <summary>
+            Returns the given object wrapped as a generic ContentWrapper (used as a ContentWrapperBase)
+            If the given object is NOT primtive or a list/dictionary, it returns null
+            </summary>
+            <param name="type">Object type to wrap</param>
+            <param name="obj">Object to wrap</param>
+            <param name="invalidType">Whether the type was invalid (if not and null, then serializable object)</param>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.ContentWrapper`1">
+            <summary>
+            Wraps a type in a serializable object
+            </summary>
+            <typeparam name="T">Type to wrap</typeparam>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.ContentWrapper`1._tContent">
+            <summary>
+            Property-backing field
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.ContentWrapper`1.Content">
+            <summary>
+            The content wrapped
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.ContentWrapper`1.#ctor(`0)">
+            <summary>
+            Constructs a new content wrapper
+            </summary>
+            <param name="obj"></param>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.AuthPacket">
+            <summary>
+            Base class for all authentication packets
+            Mainly to centralize proto includes at top-packet level and keep ids on 1byte
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.AuthPacket.#ctor(System.Byte,System.Object[])">
+            <summary>
+            Constructs a new authentication packet. Header is always OK and id is always AUTH
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.AuthPacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.AuthPacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.PgpPublicKeyPacket">
+            <summary>
+            A packet who has only 1 argument : a pgp public key
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.PgpPublicKeyPacket.PGP_CRYPT">
+            <summary>
+            Pgp crypt method to use
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.PgpPublicKeyPacket.Contents">
+            <summary>
+            The public key
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.PgpPublicKeyPacket.Item(System.Int32)">
+            <summary>
+            Always returns the pgp public key contained, no matter the index
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.PgpPublicKeyPacket.#ctor(System.Byte,Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey)">
+            <summary>
+            Constructs a new packet for a pgp public key
+            </summary>
+            <param name="specifier">Specifier to use with the packet</param>
+            <param name="key">The key to send</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.PgpPublicKeyPacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.PgpPublicKeyPacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.PgpPublicKeyPacket.Get(System.Int32)">
+            <summary>
+            The return value does not depend on index
+            </summary>
+            <returns>Always the public key sent</returns>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.SymKeyPacket">
+            <summary>
+            A packet which contains only 1 argument : a symmetric encryption key, itself crypted with a pgp public key
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.SymKeyPacket.SYM_CRYPT">
+            <summary>
+            Symmetric crypting helper instance
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.SymKeyPacket.Contents">
+            <summary>
+            The symmetric key as a byte array
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Packets.SymKeyPacket.GetKey(Honjo.Framework.Crypt.AbstractPgpCrypt,Org.BouncyCastle.Bcpg.OpenPgp.PgpPrivateKey)"/>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.SymKeyPacket.Item(System.Int32)">
+            <summary>
+            Always returns the symmetric key contained, no matter the index
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.SymKeyPacket.#ctor(System.Byte,Org.BouncyCastle.Crypto.Parameters.KeyParameter,Honjo.Framework.Crypt.AbstractPgpCrypt,Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey)">
+            <summary>
+            Constructs a new symmetric key packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.SymKeyPacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.SymKeyPacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.SymKeyPacket.Get(System.Int32)">
+            <summary>
+            The returned value doesn't depend on index
+            </summary>
+            <returns>Always the symmetric key as a byte array pgp-encrypted</returns>
+            <seealso cref="M:Honjo.Framework.Network.Packets.SymKeyPacket.GetKey(Honjo.Framework.Crypt.AbstractPgpCrypt,Org.BouncyCastle.Bcpg.OpenPgp.PgpPrivateKey)"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.SymKeyPacket.GetKey(Honjo.Framework.Crypt.AbstractPgpCrypt,Org.BouncyCastle.Bcpg.OpenPgp.PgpPrivateKey)">
+            <summary>
+            Decrypts the symmetric key
+            </summary>
+            <param name="pgpCrypt">PGP asymmetric crypting helper instance</param>
+            <param name="key">The private key to decrypt the symmetric key with</param>
+            <returns>The decrypted, wrapped, symmetric key contained in this packet</returns>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.BytePacket">
+            <summary>
+            A packet containing one, or several, byte(s) as argument(s)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.BytePacket.#ctor(System.SByte,System.Byte,System.Byte,System.Byte[])">
+            <summary>
+            Constructs a new byte packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.BytePacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.BytePacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.DoublePacket">
+            <summary>
+            A packet containing one, or several, double(s) as argument(s)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.DoublePacket.#ctor(System.SByte,System.Byte,System.Byte,System.Double[])">
+            <summary>
+            Constructs a new double packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.DoublePacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.DoublePacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.FloatPacket">
+            <summary>
+            A packet, containing one, or several, float(s) as argument(s)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.FloatPacket.#ctor(System.SByte,System.Byte,System.Byte,System.Single[])">
+            <summary>
+            Constructs a new float packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.FloatPacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.FloatPacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.IntPacket">
+            <summary>
+            A packet, containing one, or several, integer(s) as argument(s)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.IntPacket.#ctor(System.SByte,System.Byte,System.Byte,System.Int32[])">
+            <summary>
+            Constructs a new integer packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.IntPacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.IntPacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.StringPacket">
+            <summary>
+            A packet, containing one, or several, string(s) as argument(s)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.StringPacket.#ctor(System.SByte,System.Byte,System.Byte,System.String[])">
+            <summary>
+            Constructs a new string packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.StringPacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.StringPacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.TPacket`1">
+            <summary>
+            A packet of a generic type known at compile-time
+            </summary>
+            <typeparam name="T">Generic type</typeparam>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.TPacket`1.Contents">
+            <summary>
+            Generic-typed arguments of this packet
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.TPacket`1.Item(System.Int32)">
+            <summary>
+            Square bracket simplification. Retrieves the argument at the given index.
+            </summary>
+            <param name="i">Index of the argument (content index)</param>
+            <returns>The argument at the given index</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.TPacket`1.#ctor(System.SByte,System.Byte,System.Byte,`0[])">
+            <summary>
+            Constructs a new generic packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.TPacket`1.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.TPacket`1.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.TPacket`1._PostSetup(Honjo.Framework.Network.Serialization)">
+            <summary>
+            Set up packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.TPacket`1.Get(System.Int32)">
+            <summary>
+            Retrieves the argument at the given index
+            </summary>
+            <returns>The argument at the given index</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.TPacket`1.Get``1(System.Int32,System.Func{`0,``0})">
+            <summary>
+            Retrieves the argument at the given index under converted form
+            </summary>
+            <typeparam name="U">Expected type</typeparam>
+            <param name="index">Index of the argument</param>
+            <param name="converter">Converter function. Takes an argument of the packet type and returns the expected type</param>
+            <returns>Converted argument at given index</returns>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.FilePacket">
+            <summary>
+            A packet transfering a file as a byte array
+            Should be compressed with large file size
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.FilePacket.TransferOption">
+            <summary>
+            Transfer option for the file in this packet
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.FilePacket.Contents">
+            <summary>
+            Always returns the content at first index (file contents)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.Packets.FilePacket.Item(System.Int32)">
+            <summary>
+            Always returns wrapped file contents independently of the index
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.FilePacket.#ctor(System.SByte,System.Byte,System.Byte,System.String,Honjo.Framework.Network.Packets.FileTransferOption)">
+            <summary>
+            Constructs a new file packet
+            Filepath is the local path of the file to transfer
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.FilePacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.FilePacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.FilePacket.Get(System.Int32)">
+            <summary>
+            Always returns file contents independently of index
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.FilePacket.WriteTo(System.String)">
+            <summary>
+            Writes the transferred file to a local given file
+            </summary>
+            <param name="destination">File path to transfer to</param>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.FileTransferOption">
+            <summary>
+            Options for file transfers
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.FileTransferOption.BINARY">
+            <summary>
+            The file is binary and should be transferred as a byte array
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.FileTransferOption.TEXT">
+            <summary>
+            The file is a plain text content and should be read as-is
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Packets.FileTransferOption.LINES">
+            <summary>
+            The file is composed of ordered lines and should be treated as such
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.ImagePacket">
+            <summary>
+            A packet transferring an image.
+            Should be compressed
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.ImagePacket.#ctor(System.SByte,System.Byte,System.Byte,System.String)">
+            <summary>
+            Constructs a new image packet. The imagePath is the local path of the image
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.ImagePacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.ImagePacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Packets.UtilPacket">
+            <summary>
+            A base class for all utility packets
+            As with auth, mainly there to keep top-level packets proto id in 1byte
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.UtilPacket.#ctor(System.SByte,System.Byte,System.Byte,System.Object[])">
+            <summary>
+            Constructs a new utility packet, params are same as a base packet
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.UtilPacket.#ctor">
+            <summary>
+            Protobuf-net serialization constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Packets.UtilPacket.#ctor(System.Object[],System.SByte,System.Byte,System.Byte,System.DateTime,System.String,System.DateTime)">
+            <summary>
+            MessagePack-C# serialization constructor
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.PacketLogger">
+            <summary>
+            Sends a packet every time something is logged
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.PacketLogger.Id">
+            <summary>
+            Identifier byte of packets to send when logging
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.PacketLogger.Specifier">
+            <summary>
+            Specifier byte to use for packets to send when logging
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.PacketLogger.Client">
+            <summary>
+            Client to send packets to when logging
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.PacketLogger.Format">
+            <summary>
+            Whether to format strings before sending them
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.PacketLogger.#ctor(System.String,System.Byte,System.Byte,Honjo.Framework.Network.Client,System.Boolean)">
+            <summary>
+            Constructs a packet logger
+            </summary>
+            <param name="appName">Name of the app using this logger</param>
+            <param name="id">Identifier byte for packets</param>
+            <param name="specifier">Specifier byte for packets</param>
+            <param name="client">Client to send packets to</param>
+            <param name="logStart">Whether to send packets to print a standard starting message. False by default for this one.</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.PacketLogger.Log(System.String,System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Logs a message. Should apply formatting and stuff.
+            </summary>
+            <param name="appName">Name of the application to log with</param>
+            <param name="level">Level to log, check <see cref="T:Honjo.Framework.Logging.LogLevel"/></param>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.PacketLogger._Print(Honjo.Framework.Logging.LogLevel,System.String)">
+            <summary>
+            Print something as raw. Acutally sends a log packet
+            </summary>
+            <param name="level">Level of the message</param>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="T:Honjo.Framework.Network.MultiPLogger">
+            <summary>
+            A logger which sends packets when logging, and which has a specifier byte for packets varying depending on the log level
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.MultiPLogger.LEVEL_SPECIFIERS">
+            <summary>
+            Dictionary to link logging levels to the specifier of packets. Intended for modification.
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.MultiPLogger.Id">
+            <summary>
+            Identifier byte of packets to send when logging
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.MultiPLogger.Client">
+            <summary>
+            Client to send packets to when logging
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.MultiPLogger.Format">
+            <summary>
+            Whether to format strings before logging them
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.MultiPLogger.#ctor(System.String,System.Byte,Honjo.Framework.Network.Client,System.Boolean)">
+            <summary>
+            Constructs a new multi-packet logger
+            </summary>
+            <param name="appName">Name of application using this logger</param>
+            <param name="id">Identifier byte for ALL packets. Does not change.</param>
+            <param name="client">Client to send logging packets to</param>
+            <param name="logStart">Whether to print out a standard logger start message. False by default for this one, too.</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.MultiPLogger.#ctor(System.String,System.Byte,Honjo.Framework.Network.Client,System.Byte,System.Boolean)">
+            <summary>
+            Constructs a new multi-packet logger
+            </summary>
+            <param name="appName">Name of application using this logger</param>
+            <param name="id">Identifier byte for ALL packets. Does not change.</param>
+            <param name="client">Client to send logging packets to.</param>
+            <param name="specifier_start">The starting specifier. It will be the specifier for the least severe level (eg: NORMAL or such). For each increasing level, the specifier is incremented.</param>
+            <param name="logStart">Whether to print out a standard logger start message. False by default for this one.</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.MultiPLogger.Log(System.String,System.String,Honjo.Framework.Logging.LogLevel)">
+            <summary>
+            Logs a message. Should apply formatting and stuff.
+            </summary>
+            <param name="level">Level to log, check <see cref="T:Honjo.Framework.Logging.LogLevel"/></param>
+            <param name="message">Message to log</param>
+            <param name="appName">Name of the application to log with</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.MultiPLogger._Print(Honjo.Framework.Logging.LogLevel,System.String)">
+            <summary>
+            Print something as raw. Acutally sends a log packet
+            </summary>
+            <param name="level">Level of the message</param>
+            <param name="message">Message to log</param>
+        </member>
+        <member name="T:Honjo.Framework.Network.Processing.PProcess">
+            <summary>
+            A delegate to call when a given client receives a given packet
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Processing.ReceptionProc">
+            <summary>
+            Handles processing of received packets at a global scale (all clients), sorted by id and specifier
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Processing.ReceptionProc.ALL_PACKETS_RECEPTION">
+            <summary>
+            An event (delegate) to call for ALL packets
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.IdProcesser(System.Byte)">
+            <summary>
+            Used solely to call it. Use <see cref="M:Honjo.Framework.Network.Processing.ReceptionProc.Put(System.Byte,System.Byte,Honjo.Framework.Network.Processing.PProcess)"/> to add new ones.
+            </summary>
+            <param name="id">Identifier byte</param>
+            <returns>The delegate attached to the given id</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.SpecProcesser(System.Byte,System.Byte)">
+            <summary>
+            Used solely to call it. Use <see cref="M:Honjo.Framework.Network.Processing.ReceptionProc.Put(System.Byte,System.Byte,Honjo.Framework.Network.Processing.PProcess)"/> to add new ones.
+            </summary>
+            <param name="id">Identifier byte</param>
+            <param name="specifier">Specifier byte</param>
+            <returns>The delegate attached to the given id and specifier</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.Put(System.Byte,Honjo.Framework.Network.Processing.PProcess)">
+            <summary>
+            Adds a new method to run for all packets of the given identifier
+            </summary>
+            <param name="id">Identifier byte</param>
+            <param name="method">Method to add to the list of callables</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.Put(System.Byte,System.Byte,Honjo.Framework.Network.Processing.PProcess)">
+            <summary>
+            Adds a new method to run for all packets of the given identifier AND specifier
+            </summary>
+            <param name="id">Identifier byte</param>
+            <param name="specifier">Specifier byte</param>
+            <param name="method">Method to add to the list of callables</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.__DefaultPacketProcessing_id(Honjo.Framework.Network.Client,Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Default placeholder method for packet reception. Called for every packet, as long as client reception has not been overriden
+            </summary>
+            <param name="receiver">Client receiver</param>
+            <param name="packet">Packet received</param>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.__DefaultPacketProcessing_spec(Honjo.Framework.Network.Client,Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Cf above. Differentiation between the two reception to avoid double packet processing.
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Type[])">
+            <summary>
+            Checks the types of packet contents. Also checks for length. For example:
+            types contains three values and packet has four arguments (contents).
+            The first is string, second is int, third is float
+            It will return true if the first packet argument is string, the second is int, and the third is float
+            </summary>
+            <param name="packet">The packet whose contents are to check</param>
+            <param name="types">Types to check</param>
+            <returns>True if packet arguments match types</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])">
+            <summary>
+            Checks the types of packet contents. Also checks for length. For example:
+            types contains three values and packet has four arguments (contents).
+            The first is string, second is int, third is float
+            It will return true if the first packet argument is string, the second is int, and the third is float
+            </summary>
+            <param name="packet">The packet whose contents are to check</param>
+            <param name="skipNull">Whether to skip (as if valid) null values</param>
+            <param name="types">Types to check</param>
+            <returns>True if packet arguments match types</returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``1(Honjo.Framework.Network.Packets.Packet,``0@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``2(Honjo.Framework.Network.Packets.Packet,``0@,``1@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``3(Honjo.Framework.Network.Packets.Packet,``0@,``1@,``2@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``4(Honjo.Framework.Network.Packets.Packet,``0@,``1@,``2@,``3@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``5(Honjo.Framework.Network.Packets.Packet,``0@,``1@,``2@,``3@,``4@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``6(Honjo.Framework.Network.Packets.Packet,``0@,``1@,``2@,``3@,``4@,``5@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``7(Honjo.Framework.Network.Packets.Packet,``0@,``1@,``2@,``3@,``4@,``5@,``6@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``8(Honjo.Framework.Network.Packets.Packet,``0@,``1@,``2@,``3@,``4@,``5@,``6@,``7@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``9(Honjo.Framework.Network.Packets.Packet,``0@,``1@,``2@,``3@,``4@,``5@,``6@,``7@,``8@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType``10(Honjo.Framework.Network.Packets.Packet,``0@,``1@,``2@,``3@,``4@,``5@,``6@,``7@,``8@,``9@,System.Boolean)">
+            <summary>
+            Generic version with out argument
+            </summary>
+            <seealso cref="M:Honjo.Framework.Network.Processing.ReceptionProc.OfType(Honjo.Framework.Network.Packets.Packet,System.Boolean,System.Type[])"/>
+        </member>
+        <member name="T:Honjo.Framework.Network.Protocol">
+            <summary>
+            Available protocols for clients
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Protocol.TCP">
+            <summary>
+            TCP protocol
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Protocol.UDP">
+            <summary>
+            UDP protocol
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.ProtocolMethods">
+            <summary>
+            Extension methods for protocols
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ProtocolMethods.GetSocketType(Honjo.Framework.Network.Protocol)">
+            <summary>
+            The preferable socket type to use for a given protocol
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ProtocolMethods.GetNativeType(Honjo.Framework.Network.Protocol)">
+            <summary>
+            The native C# protocol type linked to a protocol
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ProtocolMethods.SetupListener(Honjo.Framework.Network.Protocol,System.Net.Sockets.Socket,System.Int32)">
+            <summary>
+            Sets up a listener for a socket and a given protocol
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.PEndPoint">
+            <summary>
+            Stands for protocol end point. A port and a protocol (which defines an end point)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.PEndPoint.Port">
+            <summary>
+            The port number
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Network.PEndPoint.Protocol">
+            <summary>
+            The protocol used
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.PEndPoint.#ctor(System.Int32,Honjo.Framework.Network.Protocol)">
+            <summary>
+            Constructs a new protocol end point
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.PEndPoint.Equals(System.Object)">
+            <summary>
+            Simple equality check for the port and the protocol
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.PEndPoint.GetHashCode">
+            <summary>
+            Hash code
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.Serialization">
+            <summary>
+            Serialization enum
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Serialization.UNKNOWN">
+            <summary>
+            Unknown serialization methods (error parsing ?)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Serialization.NATIVE">
+            <summary>
+            Native BCL binary serialization
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Network.Serialization.PROTOBUF">
+            <summary>
+            Protobuf-net serialization
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.SerializationExtensions">
+            <summary>
+            Extension methods for serialization
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.SerializationExtensions.SetupPacket_PreSerialization(Honjo.Framework.Network.Serialization,System.Object[]@)">
+            <summary>
+            Sets a packet up before serialization. Mainly for serialization methods light on type metadata (protobuf-net...)
+            Designed to be used solely by the packet class
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.SerializationExtensions.SetupPacket_PostDeserialization(Honjo.Framework.Network.Serialization,System.Object[]@)">
+            <summary>
+            Sets a packet up after serialization. Mainly for serialization methods light on type metadata (protobuf-net...)
+            Designed to be used solely by the packet class
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Honjo.Framework.Network.SerializationExtensions.SerializePacket(Honjo.Framework.Network.Serialization,Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Serializes a packet and returns a memory stream containing streamed bytes (position is start of serialization)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.SerializationExtensions.DeserializePacket(Honjo.Framework.Network.Serialization,System.IO.Stream)">
+            <summary>
+            Deserializes a packet from a stream
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.ProtobufSerialization">
+            <summary>
+            Protobuf-net serialization
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ProtobufSerialization.SetupPacket_PreSerialization(System.Object[]@)">
+            <summary>
+            Setup protobuf-net content wrappers and surrogates before serialization
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ProtobufSerialization.SetupPacket_PostDeserialization(System.Object[]@)">
+            <summary>
+            Unpacks protobuf-net serialized packet contents
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ProtobufSerialization.SerializePacket(Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Serialize a packet
+            Remember to setup the packet before doing it
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.ProtobufSerialization.DeserializePacket(System.IO.Stream)">
+            <summary>
+            Deserializes a packet
+            Remember to unpack the packet after that
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.NativeSerialization">
+            <summary>
+            Native serialization
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.NativeSerialization.SerializePacket(Honjo.Framework.Network.Packets.Packet)">
+            <summary>
+            Serializes a packet using BCL native
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.NativeSerialization.DeserializePacket(System.IO.Stream)">
+            <summary>
+            Deserializes a packet serialized using BCL native
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Network.NetworkUtil">
+            <summary>
+            Utility class for network operations
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.NetworkUtil.UnwrapSize(System.Byte[])">
+            <summary>
+            Unwraps the size in a pre-packet length header
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Network.NetworkUtil.WrapSize(System.Int32)">
+            <summary>
+            Wraps a given size into a pre-packet length header
+            </summary>
+        </member>
+    </members>
+</doc>

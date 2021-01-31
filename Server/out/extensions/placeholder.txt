@@ -1,0 +1,1 @@
+place your extensions here named as Extension.<your app name>.dll

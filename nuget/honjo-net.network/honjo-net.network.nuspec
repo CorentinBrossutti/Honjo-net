@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>honjo-net.network</id>
+    <version>1.0.6</version>
+    <authors>Corentin BROSSUTTI</authors>
+    <owners>Corentin BROSSUTTI</owners>
+    <licenseUrl>https://github.com/Reymmer/honjo-net/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/Reymmer/honjo-net</projectUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <description>Network library of honjo-net framework. Provides a powerful, robust and extensive support for client/server based network applications.</description>
+    <releaseNotes>Stacktrace log when client disconnects unexpectedly and possibility to disable packet redudancy warning.</releaseNotes>
+    <copyright>Copyright 2018-2019</copyright>
+    <tags>network packet client server honjo-net</tags>
+    <dependencies>
+      <group targetFramework="net461">
+        <dependency id="honjo-net.crypt" version="1.0.5" />
+        <dependency id="honjo-net.util" version="1.0.5" />
+        <dependency id="honjo-net.logging" version="1.0.4" />
+      </group>
+      <group targetFramework="netstandard2.0">
+        <dependency id="honjo-net.crypt" version="1.0.5" />
+        <dependency id="honjo-net.util" version="1.0.5" />
+        <dependency id="honjo-net.logging" version="1.0.4" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

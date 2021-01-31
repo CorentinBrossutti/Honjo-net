@@ -1,0 +1,614 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Honjo-net.Crypt</name>
+    </assembly>
+    <members>
+        <member name="T:Honjo.Framework.Crypt.CipherKey">
+            <summary>
+            Container to avoid inclusion of bouncy castle in other assemblies
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.CipherKey.Key">
+            <summary>
+            The BouncyCastle cipher key
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CipherKey.#ctor(Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Wraps a new CipherKey
+            </summary>
+            <param name="param">BouncyCastle key to wrap</param>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.CryptObj`1">
+            <summary>
+            A wrapper for an encrypted object. Data is NOT stored as clear, but instead as an encrypted byte array
+            </summary>
+            <typeparam name="T">Type of the object to store</typeparam>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.CryptObj`1._helper">
+            <summary>
+            Helper to use (interfaced with encryption method)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.CryptObj`1._Encryption">
+            <summary>
+            Encryption method to use (id)
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.CryptObj`1._TData">
+            <summary>
+            The stored data, encrypted
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.CryptObj`1._Helper">
+            <summary>
+            Helper property
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CryptObj`1.#ctor(Honjo.Framework.Crypt.EncryptionBase,`0,Org.BouncyCastle.Crypto.ICipherParameters,System.Func{`0,System.Byte[]})">
+            <summary>
+            Constructs a new encrypted object for secure storing/transmission
+            </summary>
+            <param name="method">Encryption/decryption method to use</param>
+            <param name="obj">Object to securely store</param>
+            <param name="ckey">Key to use to encrypt the object</param>
+            <param name="encodeFunc">Function to encode the object into a proper byte array</param>
+            <remarks>A binary formatter may prove useful to serialize object into bytes</remarks>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CryptObj`1.#ctor(System.Byte,System.Byte[])">
+            <summary>
+            MessagePack-C# constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CryptObj`1.Decrypt(Org.BouncyCastle.Crypto.ICipherParameters,System.Func{System.Byte[],`0})">
+            <summary>
+            Decrypts the object securely stored
+            </summary>
+            <param name="dkey">Decipher key</param>
+            <param name="decodeFunc">Function to use to transform the decrypted bytes into a proper object</param>
+            <returns>The deciphered object</returns>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.CryptString">
+            <summary>
+            An object to securely store a string
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CryptString.#ctor(Honjo.Framework.Crypt.EncryptionBase,System.String,Org.BouncyCastle.Crypto.ICipherParameters,System.Text.Encoding)">
+            <summary>
+            Constructs a new encrypted string container
+            </summary>
+            <param name="method">Encryption/decryption method to use</param>
+            <param name="obj">String to store</param>
+            <param name="ckey">Encrypting key</param>
+            <param name="encoding">Encoding to use to encode/decode the string</param>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CryptString.#ctor(Honjo.Framework.Crypt.EncryptionBase,System.String,Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Constructs a new encrypted string container, using default utf8 encoding
+            </summary>
+            <param name="method">Encryption/decryption method to use</param>
+            <param name="obj">String to store</param>
+            <param name="ckey">Encrypting key</param>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CryptString.#ctor(System.Byte,System.Byte[])">
+            <summary>
+            MessagePack-C# constructor
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CryptString.Decrypt(Org.BouncyCastle.Crypto.ICipherParameters,System.Text.Encoding)">
+            <summary>
+            Decrypts a securely stored string
+            </summary>
+            <param name="dkey">Decryption key</param>
+            <param name="encoding">Encoding to use</param>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.CryptString.Decrypt(Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Decrypts a securely stored string
+            Will use utf-8 as a default encoding
+            </summary>
+            <param name="dkey">Decryption key</param>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.EncryptionBase">
+            <summary>
+            Base encryption, does not support generics and thus returns ICryptHelpers
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.EncryptionBase.UNKNOWN">
+            <summary>
+            Framework base values for encryption (unknown or none at all)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.EncryptionBase.NONE">
+            <summary>
+            Framework base values for encryption (unknown or none at all)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.EncryptionBase.ASYM_RSA2048">
+            <summary>
+            Default framework-supported asymmetric (pgp) encryption methods
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.EncryptionBase.SYM_AES256">
+            <summary>
+            Default framework-supported symmetric encryption methods
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.EncryptionBase.Helper">
+            <summary>
+            The crypt helper of this encryption type
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.EncryptionBase.Type">
+            <summary>
+            The encryption type
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.EncryptionBase.#ctor(Honjo.Framework.Crypt.ICryptHelper,Honjo.Framework.Crypt.EncryptionType)">
+            <summary>
+            ...
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.EncryptionBase.ToString">
+            <summary>
+            
+            </summary>
+            <returns>The string value of this encryption</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.EncryptionBase.Register``1(``0,Honjo.Framework.Crypt.EncryptionType,System.Action)">
+            <summary>
+            Registers a new encryption
+            </summary>
+            <typeparam name="T">Type param for the helper</typeparam>
+            <param name="helper">Helper</param>
+            <param name="type">Encryption type</param>
+            <param name="setup">Setup method to call before creating the helper</param>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.Encryption`1">
+            <summary>
+            Defines default supported encryption methods
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.Encryption`1.Helper">
+            <summary>
+            Crypting helper
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.EncryptionType">
+            <summary>
+            Encryption types
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.EncryptionType.UNDEFINED">
+            <summary>
+            Undefined (unknown)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.EncryptionType.NONE">
+            <summary>
+            No encryption (raw)
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.EncryptionType.SYMMETRIC">
+            <summary>
+            Symmetric encryption and derivatives
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.EncryptionType.ASYMMETRIC">
+            <summary>
+            Asymmetric encryption and derivatives
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.Hashing.Sha256">
+            <summary>
+            Sha256 hashing
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Sha256.Hash(System.Byte[])">
+            <summary>
+            Hashes an array of byte using SHA-256
+            </summary>
+            <param name="bytes">Bytes to hash</param>
+            <returns>Hash bytes</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Sha256.Hash(System.String)">
+            <summary>
+            Hashes a string using SHA-256. Assumes utf-8 encoding.
+            </summary>
+            <param name="str">String to hash</param>
+            <returns>The hashed string</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Sha256.Hash(System.Byte[],System.UInt32,System.Boolean)">
+            <summary>
+            Hashes an array of bytes <paramref name="iterations"/> times using SHA-256
+            </summary>
+            <param name="bytes">Bytes to hash</param>
+            <param name="iterations">Number of times to hash/re-hash</param>
+            <param name="recursive">Whether to process iterations recursively. False by default</param>
+            <returns>Hashed bytes</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Sha256.Hash(System.String,System.UInt32,System.Boolean)">
+            <summary>
+            Hashes a string <paramref name="iterations"/> times using SHA-256
+            </summary>
+            <param name="str">String to hash</param>
+            <param name="iterations">Number of times to hash/re-hash</param>
+            <param name="recursive">Whether to process iterations recursively. False by default</param>
+            <returns>Hashed string</returns>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.Hashing.Sha512">
+            <summary>
+            Sha512 hashing
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Sha512.Hash(System.Byte[])">
+            <summary>
+            Hashes an array of bytes using SHA-512
+            </summary>
+            <param name="bytes">Bytes to hash</param>
+            <returns>Hashed bytes</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Sha512.Hash(System.String)">
+            <summary>
+            Hashes a string using SHA-512
+            </summary>
+            <param name="str">String to hash</param>
+            <returns>Hashed string</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Sha512.Hash(System.Byte[],System.Int32,System.Boolean)">
+            <summary>
+            Hashes an array of bytes <paramref name="iterations"/> times using SHA-512
+            </summary>
+            <param name="bytes">Bytes to hash</param>
+            <param name="iterations">Number of times to hash/re-hash</param>
+            <param name="recursive">Whether to process iterations recursively. False by default</param>
+            <returns>Hashed bytes</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Sha512.Hash(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Hashes a string <paramref name="iterations"/> times using SHA-512
+            </summary>
+            <param name="str">String to hash</param>
+            <param name="iterations">Number of times to hash/re-hash</param>
+            <param name="recursive">Whether to process iterations recursively. False by default</param>
+            <returns>Hashed string</returns>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.Hashing.Bcrypt">
+            <summary>
+            BCrypt hashing, mainly there to interface without having to reference bouncy castle directly
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.Hashing.Bcrypt.REVISION">
+            <summary>
+            The Bcrypt revision to use by default
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Bcrypt.Hash(System.String,System.Int32)">
+            <summary>
+            Hashes a string using bcrypt algorithm. Very secure but not meant to be used in transmission since output depends on plain input password.
+            </summary>
+            <param name="str">String to hash</param>
+            <param name="rounds">Number of hashing rounds to use. Default : 10</param>
+            <returns>Hashed string using BCrypt</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Bcrypt.Verify(System.String,System.String)">
+            <summary>
+            Verify the equality between a hash and a given password string
+            </summary>
+            <param name="str">String candidate to verify</param>
+            <param name="hash">Hash to test</param>
+            <returns>Whether the password matches the hash</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Bcrypt.Salt(System.Int32)">
+            <summary>
+            Generates a bcrypt salt
+            </summary>
+            <param name="factor">Work factor. Default : 10</param>
+            <returns>BCrypt random generated salt</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Bcrypt.Hash(System.String,System.String)">
+            <summary>
+            Basic bcrypt hash function using a given salt
+            </summary>
+            <param name="str">String to hash</param>
+            <param name="salt">Salt to use</param>
+            <returns>Hashed string</returns>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.Hashing.Hashing">
+            <summary>
+            Base class for all hashing classes. Contains mostly utility methods
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.Hashing.Hashing.HashString(System.String,System.Text.Encoding,System.Func{System.Byte[],System.Byte[]})">
+            <summary>
+            Hashes a string using a given encoding an a given hash function
+            </summary>
+            <param name="str">String to hash</param>
+            <param name="encoding">Encoding to use</param>
+            <param name="hashFunc">Hash function to call and use</param>
+            <returns>The hashed string</returns>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.ICryptHelper">
+            <summary>
+            Top-level (inheritance) for all crypting helpers
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.ICryptHelper.Name">
+            <summary>
+            The name of the algorithms/methods used by this helper
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.ICryptHelper.Encrypt(System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Encrypts data
+            </summary>
+            <param name="data">Data to encrypt as a byte array</param>
+            <param name="ckey">Encryption key</param>
+            <returns>The data as its encrypted form</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.ICryptHelper.Encrypt(System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32)">
+            <summary>
+            Reads data from a stream and encrypts it
+            </summary>
+            <param name="data_in">Stream to read from</param>
+            <param name="ckey">Encryption key</param>
+            <param name="length">Number of bytes to read from the stream for encryption</param>
+            <returns>The data as its encrypted form</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.ICryptHelper.Encrypt(System.IO.Stream,System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Reads data from a stream, encrypts it, and writes to an output stream
+            </summary>
+            <param name="data_in">Stream to read the data from</param>
+            <param name="data_out">Stream to write the encrypted data to</param>
+            <param name="ckey">Encryption key</param>
+            <param name="length">Number of bytes to read from the stream for encryption</param>
+            <param name="offset">Offset to write to the output stream. Default : 0</param>
+            <param name="seekBack">Whether to put the position in the stream back where it was (just before the encrypted data). Default: true. Does not work if the stream cannot seek.</param>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.ICryptHelper.Decrypt(System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Decrypts data that was previously encrypted
+            </summary>
+            <param name="encryptedData">Encrypted data as a byte array</param>
+            <param name="dkey">Decryption key</param>
+            <returns>The raw data, decrypted</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.ICryptHelper.Decrypt(System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32)">
+            <summary>
+            Reads data from a stream and decrypts it
+            </summary>
+            <param name="data_in">The stream to read the encrypted data from</param>
+            <param name="dkey">Decryption key</param>
+            <param name="length">Number of bytes to read from stream for decryption</param>
+            <returns>The raw, decrypted data as a byte array</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.ICryptHelper.Decrypt(System.IO.Stream,System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Reads data from a stream, decrypts it, and writes it to an output stream
+            </summary>
+            <param name="data_in">Stream to read the encrypted data from</param>
+            <param name="data_out">Stream to write the decrypted data to</param>
+            <param name="dkey">Decryption key</param>
+            <param name="length">Number of bytes to read from the stream for decryption</param>
+            <param name="offset">Offset to write to the output stream. Default : 0</param>
+            <param name="seekBack">Whether to put the position in the stream back where it was (just before the decrypted data). Default: true. Does not work if the stream cannot seek.</param>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.AbstractPgpCrypt">
+            <summary>
+            Abstract asymmetric crypting helper (pgp)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.AbstractPgpCrypt.ToPublicKey(System.Byte[],System.DateTime,Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey@,System.Byte[])">
+            <summary>
+            Wraps a byte array key under a <code>PgpPublicKey</code>
+            </summary>
+            <param name="keyData">The key, raw, as a byte array</param>
+            <param name="stamp">The creation date for the key</param>
+            <param name="key">Output public key</param>
+            <param name="fingerprint">Original fingerprint to check matches</param>
+            <returns>Whether the key was successfully unwrapped and matches</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.AbstractPgpCrypt.Generate">
+            <summary>
+            Generates a new pgp key pair
+            </summary>
+            <returns>Generated pgp key pair</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.AbstractPgpCrypt.ProcessWithLength(System.Boolean,System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters,System.Int32@)">
+            <summary>
+            Process asymmetric data always giving back the processed length information
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.AbstractPgpCrypt._Process(System.Boolean,System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Process data
+            </summary>
+            <param name="encrypting">Whether the goal is to encrypt (or to decrypt, if false)</param>
+            <param name="in_data">Input data, as byte array</param>
+            <param name="keyParameter">Encryption/decryption key</param>
+            <returns>Processed byte array (data)</returns>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.RsaCrypt">
+            <summary>
+            RSA crypting helper ready to be instancied
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.RsaCrypt.INSTANCE">
+            <summary>
+            Singleton
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.RsaCrypt.Name">
+            <summary>
+            The name of the algorithms/methods used by this helper
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.RsaCrypt.ProcessWithLength(System.Boolean,System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters,System.Int32@)">
+            <summary>
+            Process asymmetric data using a custom expected length.
+            The output will ALWAYS be resized to fit expected length
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.RsaCrypt.Generate">
+            <summary>
+            Generates a new pgp key pair
+            </summary>
+            <returns>Generated pgp key pair</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.RsaCrypt.ToPublicKey(System.Byte[],System.DateTime,Org.BouncyCastle.Bcpg.OpenPgp.PgpPublicKey@,System.Byte[])">
+            <summary>
+            Wraps a byte array key under a <code>PgpPublicKey</code>
+            </summary>
+            <param name="keyData">The key, raw, as a byte array</param>
+            <param name="stamp">The creation date for the key</param>
+            <param name="key">Output public key</param>
+            <param name="fingerprint">Original fingerprint to check matches</param>
+            <returns>Whether the key was successfully unwrapped and matches</returns>
+            <remarks>You have to use <code>SubjectPublicKeyInfo</code> and <code>SubjectPublicKeyInfoFactory</code> to have a proper array when decomposing a key</remarks>
+            <see cref="T:Org.BouncyCastle.Asn1.X509.SubjectPublicKeyInfo"/>
+            <see cref="T:Org.BouncyCastle.X509.SubjectPublicKeyInfoFactory"/>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.StandardCryptHelper">
+            <summary>
+            Abstract basic interface implementation for all crypting helpers
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.StandardCryptHelper.Name">
+            <summary>
+            The name of the algorithms/methods used by this helper
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper._Process(System.Boolean,System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Process data
+            </summary>
+            <param name="encrypting">Whether the goal is to encrypt (or to decrypt, if false)</param>
+            <param name="in_data">Input data, as byte array</param>
+            <param name="key">Encryption/decryption key</param>
+            <returns>Processed byte array (data)</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper.Encrypt(System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Encrypts data
+            </summary>
+            <param name="data">Data to encrypt as a byte array</param>
+            <param name="ckey">Encryption key</param>
+            <returns>The data as its encrypted form</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper.Encrypt(System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32)">
+            <summary>
+            Reads data from a stream and encrypts it
+            </summary>
+            <param name="data_in">Stream to read from</param>
+            <param name="ckey">Encryption key</param>
+            <param name="length">Number of bytes to read from the stream for encryption</param>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper.Encrypt(System.IO.Stream,System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Reads data from a stream, encrypts it, and writes to an output stream
+            </summary>
+            <param name="data_in">Stream to read the data from</param>
+            <param name="data_out">Stream to write the encrypted data to</param>
+            <param name="ckey">Encryption key</param>
+            <param name="length">Number of bytes to read from the stream for encryption</param>
+            <param name="offset">Offset to write to the output stream. Default : 0</param>
+            <param name="seekBack">Whether to put the position in the stream back where it was (just before the encrypted data). Default: true. Does not work if the stream cannot seek.</param>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper.Decrypt(System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Decrypts data that was previously encrypted
+            </summary>
+            <param name="encryptedData">Encrypted data as a byte array</param>
+            <param name="dkey">Decryption key</param>
+            <returns>The raw data, decrypted</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper.Decrypt(System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32)">
+            <summary>
+            Reads data from a stream and decrypts it
+            </summary>
+            <param name="data_in">The stream to read the encrypted data from</param>
+            <param name="dkey">Decryption key</param>
+            <param name="length">Number of bytes to read from stream for decryption</param>
+            <returns>The raw, decrypted data as a byte array</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper.Decrypt(System.IO.Stream,System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Reads data from a stream, decrypts it, and writes it to an output stream
+            </summary>
+            <param name="data_in">Stream to read the encrypted data from</param>
+            <param name="data_out">Stream to write the decrypted data to</param>
+            <param name="dkey">Decryption key</param>
+            <param name="length">Number of bytes to read from the stream for decryption</param>
+            <param name="offset">Offset to write to the output stream. Default : 0</param>
+            <param name="seekBack">Whether to put the position in the stream back where it was (just before the decrypted data). Default: true. Does not work if the stream cannot seek.</param>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper.Decrypt(System.Byte[],System.IO.Stream,Org.BouncyCastle.Crypto.ICipherParameters,System.Int32,System.Boolean)">
+            <summary>
+            Decrypts data from a byte array, and writes it to a stream
+            </summary>
+            <param name="encryptedData">Encrypted data</param>
+            <param name="data_out">Stream to write the decrypted data to</param>
+            <param name="dkey">Decryption key</param>
+            <param name="offset">Offset to write to the output stream. Default : 0</param>
+            <param name="seekBack">Whether to put the position in the stream back where it was (just before the decrypted data). Default: true. Does not work if the stream cannot seek.</param>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.StandardCryptHelper.ToString">
+            <summary>
+            String representation of this crypting helper
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.AbstractSymCrypt">
+            <summary>
+            Abstract class for all symmetric crypting helpers
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.AbstractSymCrypt.KeyLengthByte">
+            <summary>
+            The length of the sym key to use in bytes (thus AES256 -> 16)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.AbstractSymCrypt.Generate">
+            <summary>
+            Generates a new symmetric key for encryption/decryption
+            </summary>
+            <returns>The newly generated key</returns>
+        </member>
+        <member name="T:Honjo.Framework.Crypt.AesCrypt">
+            <summary>
+            AES, ready to be used, symmetric crypting helper
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Crypt.AesCrypt.INSTANCE">
+            <summary>
+            Singleton
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.AesCrypt.Name">
+            <summary>
+            The name of the algorithms/methods used by this helper
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Crypt.AesCrypt.KeyLengthByte">
+            <summary>
+            The length of the sym key to use in bytes (thus AES256 -> 16)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.AesCrypt.Generate">
+            <summary>
+            Generates a new symmetric key for encryption/decryption
+            </summary>
+            <returns>The newly generated key</returns>
+        </member>
+        <member name="M:Honjo.Framework.Crypt.AesCrypt._Process(System.Boolean,System.Byte[],Org.BouncyCastle.Crypto.ICipherParameters)">
+            <summary>
+            Process data
+            </summary>
+            <param name="encrypting">Whether the goal is to encrypt (or to decrypt, if false)</param>
+            <param name="data">Input data, as byte array</param>
+            <param name="key">Encryption/decryption key</param>
+            <returns>Processed byte array (data)</returns>
+        </member>
+    </members>
+</doc>

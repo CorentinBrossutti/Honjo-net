@@ -1,0 +1,250 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Honjo-net.Util</name>
+    </assembly>
+    <members>
+        <member name="T:Honjo.Framework.Util.Data.CompressionProcesser">
+            <summary>
+            Delegate for compression processers methods
+            </summary>
+            <param name="source">Source stream</param>
+            <param name="dest">Destination stream</param>
+            <param name="compressing">Whether the process operation is compressing (false = decompressing)</param>
+            <param name="bufferSize">The buffer size to use when processing a potentially non-length-supporting stream. 512 is default</param>
+            <param name="seekBack">Whether to go back at the start of the written data on the destination stream if supported. True by default</param>
+        </member>
+        <member name="T:Honjo.Framework.Util.Data.Compression">
+            <summary>
+            Compression pseudo-enum for dynamic registered compression methods
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Data.Compression.DEFAULT_COMPRESSION_BUFFER_SIZE">
+            <summary>
+            Default buffer size when processing compressed data/data to compress
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Data.Compression.UNKNOWN">
+            <summary>
+            Default framework-supported compressions
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Data.Compression.NONE">
+            <summary>
+            Default framework-supported compressions
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Data.Compression.GZIP">
+            <summary>
+            Default framework-supported compressions
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Data.Compression.DEFLATE_RAW">
+            <summary>
+            Default framework-supported compressions
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Process(System.Byte[],System.Boolean)">
+            <summary>
+            Process a byte array, returns its processed counterpart
+            </summary>
+            <param name="from">Source byte array to process</param>
+            <param name="compressing">Whether to compress or not (false : decompressing)</param>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Process(System.IO.Stream,System.IO.Stream,System.Boolean,System.Int32,System.Boolean)">
+            <summary>
+            Process data from a stream and writes its processed counterpart to another
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Process(System.Byte[],System.IO.Stream,System.Boolean,System.Boolean)">
+            <summary>
+            Process a byte array, and writes its processed counterpart to a stream
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Process(System.IO.Stream,System.Boolean,System.Int32)">
+            <summary>
+            Process data from a stream and returns its processed counterpart as a byte array
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Compress(System.Byte[])">
+            <summary>
+            Compresses data and returns it
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Compress(System.IO.Stream,System.IO.Stream,System.Int32,System.Boolean)">
+            <summary>
+            Compresses data from a stream and writes it to another
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Compress(System.Byte[],System.IO.Stream,System.Boolean)">
+            <summary>
+            Compresses data and writes it to a stream
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Compress(System.IO.Stream,System.Int32)">
+            <summary>
+            Compresses data from a stream and returns it (the compressed data)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Decompress(System.Byte[])">
+            <summary>
+            Decompresses data and returns it
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Decompress(System.IO.Stream,System.IO.Stream,System.Int32,System.Boolean)">
+            <summary>
+            Decompresses data from a stream and writes it to another
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Decompress(System.Byte[],System.IO.Stream,System.Boolean)">
+            <summary>
+            Decompresses data and writes it to a stream
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Decompress(System.IO.Stream,System.Int32)">
+            <summary>
+            Decompresses data from a stream and returns it
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.ToString">
+            <summary>
+            
+            </summary>
+            <returns>The string value of this serialization</returns>
+        </member>
+        <member name="M:Honjo.Framework.Util.Data.Compression.Register(Honjo.Framework.Util.Data.CompressionProcesser,System.Action)">
+            <summary>
+            Registers a new compression method
+            </summary>
+            <param name="processer">The delegate to call when processing data to compress, <see cref="T:Honjo.Framework.Util.Data.CompressionProcesser"/></param>
+            <param name="setup">Delegate void to call when setting up the compression method</param>
+        </member>
+        <member name="T:Honjo.Framework.Util.Concurrent.Locks">
+            <summary>
+            A handy class to reference immutable, readonly object instances to lock upon
+            </summary>
+        </member>
+        <member name="F:Honjo.Framework.Util.Concurrent.Locks._internLocks">
+            <summary>
+            Internal dictionary for locks
+            </summary>
+        </member>
+        <member name="P:Honjo.Framework.Util.Concurrent.Locks.Item(System.String)">
+            <summary>
+            Get the lock object linked to a given key
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.Concurrent.Locks.#ctor(System.String[])">
+            <summary>
+            Constructs a new lock container
+            </summary>
+            <param name="baseLocks">Base locks to register</param>
+        </member>
+        <member name="T:Honjo.Framework.Util.PseudoEnum">
+            <summary>
+            Base class for pseudo enum values
+            Allows the treatment of values very much like an enum but dynamically (you can add custom values at runtime)
+            </summary>
+            <remarks>Adisable to use a factory-like register method to emphasize the uniqueness of each object. Also, the id 0 (first register) must be the undefined value (or default value).</remarks>
+        </member>
+        <member name="P:Honjo.Framework.Util.PseudoEnum.Id">
+            <summary>
+            Id of a pseudo enum member
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.PseudoEnum.#ctor">
+            <summary>
+            Constructs a new pseudo enum
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.PseudoEnum.#ctor(System.Type)">
+            <summary>
+            Constructs a new pseudo enum with a custom registration type
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.PseudoEnum.Equals(System.Object)">
+            <summary>
+            Equals override
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.PseudoEnum.GetHashCode">
+            <summary>
+            GetHashCode override
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.PseudoEnum.op_Equality(Honjo.Framework.Util.PseudoEnum,Honjo.Framework.Util.PseudoEnum)">
+            <summary>
+            Equality operator overload to check for ids
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.PseudoEnum.op_Inequality(Honjo.Framework.Util.PseudoEnum,Honjo.Framework.Util.PseudoEnum)">
+            <summary>
+            Inequality operator overload to check for ids
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.PseudoEnum.Get(System.Type,System.Byte)">
+            <summary>
+            Get a pseudo enum value from its id
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.PseudoEnum.NullOrDefault(Honjo.Framework.Util.PseudoEnum)">
+            <summary>
+            Is this member null or the default value for the pseudo enum ?
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Util.GenPseudoEnum`1">
+            <summary>
+            Usage is --> public class XXX : GenPseudoEnum&lt;XXX&gt; (XXX being your pseudo enum type ofc)
+            </summary>
+            <typeparam name="T">Value to represent in the pseudo enum</typeparam>
+        </member>
+        <member name="M:Honjo.Framework.Util.GenPseudoEnum`1.#ctor">
+            <summary>
+            New gen pseudo enum, uses current type as type registration
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.GenPseudoEnum`1.#ctor(System.Type)">
+            <summary>
+            New gen pseudo enum, uses given type as type registration
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.GenPseudoEnum`1.Get(System.Byte)">
+            <summary>
+            Get a pseudo enum value from its id
+            </summary>
+        </member>
+        <member name="T:Honjo.Framework.Util.StreamUtil">
+            <summary>
+            Utility class for stream methods
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.StreamUtil.GetRemainingBytes(System.IO.Stream)">
+            <summary>
+            Do not use it for large streams, from which you haven't read from awhile!
+            Also does not work for streams for which you can't get length
+            </summary>
+            <param name="stream">The stream</param>
+            <returns>The remaining number of bytes to read</returns>
+        </member>
+        <member name="M:Honjo.Framework.Util.StreamUtil.ReadRemaining(System.IO.Stream)">
+            <summary>
+            Reads all remaining bytes in the stream. Very heavy and does not work for streams without length (network)
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.StreamUtil.Read(System.IO.Stream,System.Int32)">
+            <summary>
+            Reads <b>length</b> bytes from the given stream
+            </summary>
+        </member>
+        <member name="M:Honjo.Framework.Util.StreamUtil.CopyTo(System.IO.Stream,System.IO.Stream,System.Int32,System.Boolean)">
+            <summary>
+            Copies the contents of a stream to another
+            Returns the number of bytes copied
+            </summary>
+            <param name="stream_in">Input stream</param>
+            <param name="stream_out">Output stream</param>
+            <param name="bufferSize">Buffer size to use if the input stream does not support length query. 512 by default.</param>
+            <param name="seekBack">Whether to roll the stream back at its previous position if it supports it</param>
+        </member>
+    </members>
+</doc>
